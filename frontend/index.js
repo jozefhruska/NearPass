@@ -2,6 +2,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+import { NextUIProvider } from '@nextui-org/react';
+import './assets/global.css';
 
 // NEAR
 import { HelloNEAR } from './near-interface';
@@ -17,9 +19,11 @@ const helloNEAR = new HelloNEAR({ contractId: process.env.CONTRACT_NAME, walletT
 // Setup on page load
 window.onload = async () => {
   const isSignedIn = await wallet.startUp()
- 
+
   ReactDOM.render(
-    <App isSignedIn={isSignedIn} helloNEAR={helloNEAR} wallet={wallet} />,
+    <NextUIProvider>
+      <App isSignedIn={isSignedIn} helloNEAR={helloNEAR} wallet={wallet} />
+    </NextUIProvider>,
     document.getElementById('root')
   );
 }
