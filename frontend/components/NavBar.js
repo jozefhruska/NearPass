@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button, Navbar, Link, Spacer, Text } from '@nextui-org/react';
+import { Button, Navbar, Spacer, Text } from '@nextui-org/react';
 
-export default ({ isSignedIn, wallet }) => {
+export default ({ isSignedIn, openKeyPhraseModal, wallet }) => {
   return (
     <>
       <Navbar isBordered variant="static">
@@ -14,21 +14,28 @@ export default ({ isSignedIn, wallet }) => {
           {
             isSignedIn
               ? (
-                <Navbar.Item>
-                  <Button auto flat onPress={() => wallet.signOut()}>
-                    Sign out {wallet?.accountId}
-                  </Button>
-                </Navbar.Item>
+                <>
+                  <Navbar.Item>
+                    <Button auto flat onPress={openKeyPhraseModal}>
+                      Change passphrase
+                    </Button>
+                  </Navbar.Item>
+                  <Navbar.Item>
+                    <Button auto flat onPress={() => wallet.signOut()}>
+                      Sign out {wallet?.accountId}
+                    </Button>
+                  </Navbar.Item>
+                </>
               )
               : (
                 <>
                   <Navbar.Item>
-                    <Button auto flat onPress={() => wallet.signIn()}>
+                    <Button auto flat onPress={() => wallet.signIn() && openKeyPhraseModal()}>
                       Login
                     </Button>
                   </Navbar.Item>
                   <Navbar.Item>
-                    <Button auto flat onPress={() => wallet.signIn()}>
+                    <Button auto flat onPress={() => wallet.signIn() && openKeyPhraseModal()}>
                       Sign Up
                     </Button>
                   </Navbar.Item>

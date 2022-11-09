@@ -2,11 +2,10 @@ import React from 'react';
 import { AES, enc } from 'crypto-js';
 import { Grid, Text, Input, Container, Button } from "@nextui-org/react";
 
-export default ({ helloNEAR, wallet }) => {
+export default ({ helloNEAR, keyPhrase, wallet }) => {
   const [facebookPassword, setFacebookPassword] = React.useState('');
   const [contractResponse, setContractResponse] = React.useState('');
   const [contractResponseDeciphered, setContractResponseDeciphered] = React.useState();
-  const [keyPhrase, setKeyPhrase] = React.useState('');
 
   const [isLoading, setIsLoading] = React.useState(true);
   const decipherAndSetText = (response) => {
@@ -55,14 +54,6 @@ export default ({ helloNEAR, wallet }) => {
   return (
     <Container md>
       <Grid.Container gap={2} justify="center" md>
-        <Grid lg={12}>
-          <Input.Password
-            labelPlaceholder="Keyphrase"
-            onChange={({target: { value}}) => setKeyPhrase(value)}
-            value={keyPhrase}
-            status="default"
-          />
-        </Grid>
         <Grid xs={12}>
           <Text>
             Password is: {contractResponseDeciphered}
