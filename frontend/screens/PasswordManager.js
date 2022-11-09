@@ -1,12 +1,13 @@
 import React from 'react';
 import { AES, enc } from 'crypto-js';
-import { Grid, Text, Input, Container, Button, Table } from "@nextui-org/react";
+import { Grid, Text, Input, Container, Button, Table, Modal, Spacer } from '@nextui-org/react';
 import PasswordCell from '../components/PasswordCell';
 
 export default ({ helloNEAR, keyPhrase, wallet }) => {
   const [facebookPassword, setFacebookPassword] = React.useState('');
   const [contractResponse, setContractResponse] = React.useState('');
   const [contractResponseDeciphered, setContractResponseDeciphered] = React.useState();
+  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
 
   const [isLoading, setIsLoading] = React.useState(true);
   const decipherAndSetText = (response) => {
@@ -95,6 +96,7 @@ export default ({ helloNEAR, keyPhrase, wallet }) => {
                   <PasswordCell
                     record={record}
                     columnKey={columnKey}
+                    openEditModal={() => setIsEditModalOpen(true)}
                   />
                 </Table.Cell>
               )}
@@ -102,31 +104,56 @@ export default ({ helloNEAR, keyPhrase, wallet }) => {
           )}
         </Table.Body>
       </Table>
+      <Modal
+        aria-labelledby="Edit record"
+        closeButton
+        open={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      >
+        <Modal.Header>
+          <Text id="modal-title" size={18}>
+            Edit your record data
+          </Text>
+        </Modal.Header>
+        <form onSubmit={
+          (e) => {
+            e.preventDefault()
+            setIsEditModalOpen(false)
+          }}>
+          <Modal.Body>
+            <Spacer y={0}/>
+            <Input.Password
+              bordered
+              clearable
+              color="primary"
+              labelPlaceholder="Password"
+              fullWidth
+              onChange={({target: {value}}) => setFacebookPassword(value)}
+              placeholder="Password"
+              value={facebookPassword}
+              size="lg"
+            />
+          </Modal.Body>
+          <Modal.Footer justify="center">
+            <Button
+              auto
+              flat
+              onPress={() => setIsEditModalOpen(false)}>
+              Close
+            </Button>
+            <Button
+              auto
+              disabled={!keyPhrase}
+              onPress={() => {
+                changeGreeting()
+                setIsEditModalOpen(false)
+              }}
+              type="submit">
+              Save
+            </Button>
+          </Modal.Footer>
+        </form>
+      </Modal>
     </Container>
   )
 }
-/*
-
-    <Container md>
-      <Grid.Container gap={2} justify="center" md>
-        <Grid xs={12}>
-          <Text>
-            Password is: {contractResponseDeciphered}
-          </Text>
-        </Grid>
-        <Grid lg={12}>
-          <Input.Password
-            labelPlaceholder="Facebook password"
-            onChange={({target: { value}}) => setFacebookPassword(value)}
-            value={facebookPassword}
-            status="default"
-          />
-        </Grid>
-        <Grid lg={12}>
-          <Button flat color="success" auto onPress={changeGreeting}>
-            Save
-          </Button>
-        </Grid>
-      </Grid.Container>
-    </Container>
- */

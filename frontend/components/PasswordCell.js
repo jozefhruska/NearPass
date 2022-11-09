@@ -6,8 +6,9 @@ import { EyeIcon } from './EyeIcon';
 import { DeleteIcon } from './DeleteIcon';
 import { DeleteRecord } from './popovers/DeleteRecord';
 import { ViewRecord } from './popovers/ViewRecord';
+import { EditRecord } from './popovers/EditRecord';
 
-export default ({ record, columnKey }) => {
+export default ({ record, columnKey, openEditModal }) => {
   const cellValue = record[columnKey];
   const [isDeletePopoverOpen, setIsDeletePopoverOpen] = React.useState(false);
   const [isViewPopoverOpen, setIsViewPopoverOpen] = React.useState(false);
@@ -68,7 +69,7 @@ export default ({ record, columnKey }) => {
           </Col>
           <Col css={{ d: "flex" }}>
             <Tooltip content="Edit record">
-              <IconButton onClick={() => console.log("Edit record", record.id)}>
+              <IconButton onClick={openEditModal}>
                 <EditIcon size={20} fill="#979797" />
               </IconButton>
             </Tooltip>
