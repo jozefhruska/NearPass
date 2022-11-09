@@ -57,11 +57,12 @@ export default ({ helloNEAR, keyPhrase, wallet }) => {
     { name: "ACTIONS", uid: "actions" },
   ]
 
-  const users = [
+  const records = [
     {
       id: 1,
       name: "Facebook",
       link: "https://www.facebook.com/",
+      username: "Wakawaka",
       password: contractResponseDeciphered,
     },
   ];
@@ -86,13 +87,13 @@ export default ({ helloNEAR, keyPhrase, wallet }) => {
             </Table.Column>
           )}
         </Table.Header>
-        <Table.Body items={users}>
-          {(user) => (
+        <Table.Body items={records}>
+          {(record) => (
             <Table.Row>
               {(columnKey) => (
                 <Table.Cell>
                   <PasswordCell
-                    user={user}
+                    record={record}
                     columnKey={columnKey}
                   />
                 </Table.Cell>

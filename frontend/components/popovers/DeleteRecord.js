@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, Button, Grid, Row } from "@nextui-org/react";
 
-export const DeleteUser = ({ closePopover }) => (
+export const DeleteRecord = ({ closePopover }) => (
   <Grid.Container
     css={{borderRadius: '14px', padding: '0.75rem', maxWidth: '330px'}}
   >

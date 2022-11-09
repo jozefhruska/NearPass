@@ -4,11 +4,13 @@ import { IconButton } from "./IconButton";
 import { EditIcon } from './EditIcon';
 import { EyeIcon } from './EyeIcon';
 import { DeleteIcon } from './DeleteIcon';
-import { DeleteUser } from './popovers/DeleteUser';
+import { DeleteRecord } from './popovers/DeleteRecord';
+import { ViewRecord } from './popovers/ViewRecord';
 
-export default ({ user, columnKey }) => {
-  const cellValue = user[columnKey];
+export default ({ record, columnKey }) => {
+  const cellValue = record[columnKey];
   const [isDeletePopoverOpen, setIsDeletePopoverOpen] = React.useState(false);
+  const [isViewPopoverOpen, setIsViewPopoverOpen] = React.useState(false);
   switch (columnKey) {
     case "name":
       return (
@@ -36,7 +38,7 @@ export default ({ user, columnKey }) => {
             cellValue && (
               <Row>
                 <Text b size={13} css={{ color: "$accents7" }}>
-                  {user.link}
+                  {record.link}
                 </Text>
               </Row>
             )
@@ -49,14 +51,24 @@ export default ({ user, columnKey }) => {
         <Row justify="center" align="center">
           <Col css={{ d: "flex" }}>
             <Tooltip content="View details">
-              <IconButton onClick={() => console.log("View user", user.id)}>
-                <EyeIcon size={20} fill="#979797" />
-              </IconButton>
+              <Popover isOpen={isViewPopoverOpen} onOpenChange={setIsViewPopoverOpen}>
+                <Popover.Trigger>
+                  <IconButton>
+                    <EyeIcon size={20} fill="#979797" />
+                  </IconButton>
+                </Popover.Trigger>
+                <Popover.Content>
+                  <ViewRecord
+                    closePopover={() => setIsViewPopoverOpen(false)}
+                    record={record}
+                  />
+                </Popover.Content>
+              </Popover>
             </Tooltip>
           </Col>
           <Col css={{ d: "flex" }}>
             <Tooltip content="Edit record">
-              <IconButton onClick={() => console.log("Edit record", user.id)}>
+              <IconButton onClick={() => console.log("Edit record", record.id)}>
                 <EditIcon size={20} fill="#979797" />
               </IconButton>
             </Tooltip>
@@ -73,7 +85,7 @@ export default ({ user, columnKey }) => {
                   </IconButton>
                 </Popover.Trigger>
                 <Popover.Content>
-                  <DeleteUser closePopover={() => setIsDeletePopoverOpen(false)}/>
+                  <DeleteRecord closePopover={() => setIsDeletePopoverOpen(false)}/>
                 </Popover.Content>
               </Popover>
             </Tooltip>
