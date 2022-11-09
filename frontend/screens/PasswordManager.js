@@ -1,6 +1,7 @@
 import React from 'react';
 import { AES, enc } from 'crypto-js';
-import { Grid, Text, Input, Container, Button } from "@nextui-org/react";
+import { Grid, Text, Input, Container, Button, Table } from "@nextui-org/react";
+import PasswordCell from '../components/PasswordCell';
 
 export default ({ helloNEAR, keyPhrase, wallet }) => {
   const [facebookPassword, setFacebookPassword] = React.useState('');
@@ -50,8 +51,61 @@ export default ({ helloNEAR, keyPhrase, wallet }) => {
   React.useEffect(() => {
     decipherAndSetText()
   }, [keyPhrase])
+  const columns = [
+    { name: "PASSWORD NAME", uid: "name" },
+    { name: "WEBSITE", uid: "link" },
+    { name: "ACTIONS", uid: "actions" },
+  ]
 
+  const users = [
+    {
+      id: 1,
+      name: "Facebook",
+      link: "https://www.facebook.com/",
+      password: contractResponseDeciphered,
+    },
+  ];
   return (
+    <Container md>
+      <Table
+        aria-label="Password overview table"
+        css={{
+          height: "auto",
+          minWidth: "100%",
+        }}
+        selectionMode="none"
+      >
+        <Table.Header columns={columns}>
+          {(column) => (
+            <Table.Column
+              key={column.uid}
+              hideHeader={column.uid === "actions"}
+              align={column.uid === "actions" ? "center" : "start"}
+            >
+              {column.name}
+            </Table.Column>
+          )}
+        </Table.Header>
+        <Table.Body items={users}>
+          {(user) => (
+            <Table.Row>
+              {(columnKey) => (
+                <Table.Cell>
+                  <PasswordCell
+                    user={user}
+                    columnKey={columnKey}
+                  />
+                </Table.Cell>
+              )}
+            </Table.Row>
+          )}
+        </Table.Body>
+      </Table>
+    </Container>
+  )
+}
+/*
+
     <Container md>
       <Grid.Container gap={2} justify="center" md>
         <Grid xs={12}>
@@ -74,5 +128,4 @@ export default ({ helloNEAR, keyPhrase, wallet }) => {
         </Grid>
       </Grid.Container>
     </Container>
-  )
-}
+ */
