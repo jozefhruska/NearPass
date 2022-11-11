@@ -7,14 +7,16 @@ import PasswordManager from './screens/PasswordManager';
 import NavBar from './components/NavBar';
 
 
-export default function App({ isSignedIn, helloNEAR, wallet }) {
+export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
   const [keyPhrase, setKeyPhrase] = React.useState('');
   const [isKeyPhraseModalVisible, setKeyPhraseModalVisible] = React.useState(!keyPhrase && isSignedIn);
   const [isFirstKeyPhraseEnter, setIsFirstKeyPhraseEnter] = React.useState(!keyPhrase);
   return (
     <>
       <NavBar
+        PasswordManagerSC={PasswordManagerSC}
         isSignedIn={isSignedIn}
+        keyPhrase={keyPhrase}
         openKeyPhraseModal={() => setKeyPhraseModalVisible(true)}
         wallet={wallet}
       />
@@ -22,7 +24,7 @@ export default function App({ isSignedIn, helloNEAR, wallet }) {
         isSignedIn
           ? (
             <PasswordManager
-              helloNEAR={helloNEAR}
+              PasswordManagerSC={PasswordManagerSC}
               keyPhrase={keyPhrase}
               wallet={wallet}
             />

@@ -1,12 +1,14 @@
 // React
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { ToastContainer } from 'react-toastify';
 import App from './App';
 import { NextUIProvider } from '@nextui-org/react';
 import './assets/global.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 // NEAR
-import { HelloNEAR } from './near-interface';
+import { NEARPasswordManager } from './near-interface';
 import { Wallet } from './near-wallet';
 
 // When creating the wallet you can optionally ask to create an access key
@@ -14,7 +16,7 @@ import { Wallet } from './near-wallet';
 const wallet = new Wallet({ createAccessKeyFor: process.env.CONTRACT_NAME })
 
 // Abstract the logic of interacting with the contract to simplify your flow
-const helloNEAR = new HelloNEAR({ contractId: process.env.CONTRACT_NAME, walletToUse: wallet });
+const PasswordManagerSC = new NEARPasswordManager({ contractId: process.env.CONTRACT_NAME, walletToUse: wallet });
 
 // Setup on page load
 window.onload = async () => {
@@ -22,7 +24,8 @@ window.onload = async () => {
 
   ReactDOM.render(
     <NextUIProvider>
-      <App isSignedIn={isSignedIn} helloNEAR={helloNEAR} wallet={wallet} />
+      <ToastContainer />
+      <App isSignedIn={isSignedIn} PasswordManagerSC={PasswordManagerSC} wallet={wallet} />
     </NextUIProvider>,
     document.getElementById('root')
   );

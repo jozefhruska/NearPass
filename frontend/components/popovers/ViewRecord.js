@@ -13,10 +13,10 @@ export const ViewRecord = ({ closePopover, record }) => (
               record.link
                 ? (
                   <Link href={record.link} isExternal target="_blank">
-                    {record.name}
+                    {record.passwordName}
                   </Link>
                 )
-                : record.name
+                : record.passwordName
             }
           </Text>
         </Grid>

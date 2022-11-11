@@ -69,7 +69,6 @@ export class Wallet {
   async viewMethod({ contractId, method, args = {} }) {
     const { network } = this.walletSelector.options;
     const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
-
     let res = await provider.query({
       request_type: 'call_function',
       account_id: contractId,

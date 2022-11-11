@@ -6,14 +6,13 @@ import { EyeIcon } from './EyeIcon';
 import { DeleteIcon } from './DeleteIcon';
 import { DeleteRecord } from './popovers/DeleteRecord';
 import { ViewRecord } from './popovers/ViewRecord';
-import { EditRecord } from './popovers/EditRecord';
 
 export default ({ record, columnKey, openEditModal }) => {
   const cellValue = record[columnKey];
   const [isDeletePopoverOpen, setIsDeletePopoverOpen] = React.useState(false);
   const [isViewPopoverOpen, setIsViewPopoverOpen] = React.useState(false);
   switch (columnKey) {
-    case "name":
+    case "passwordName":
       return (
         <Text size="$md">
           {cellValue}

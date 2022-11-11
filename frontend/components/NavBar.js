@@ -1,7 +1,15 @@
 import React from 'react';
 import { Button, Navbar, Spacer, Text } from '@nextui-org/react';
+import { AddRecord } from './modals/AddRecord';
 
-export default ({ isSignedIn, openKeyPhraseModal, wallet }) => {
+export default ({
+  isSignedIn,
+  openKeyPhraseModal,
+  wallet,
+  PasswordManagerSC,
+  keyPhrase,
+}) => {
+  const [isAddRecordModalOpen, setIsAddRecordModalOpen] = React.useState(false);
   return (
     <>
       <Navbar isBordered variant="static">
@@ -15,6 +23,11 @@ export default ({ isSignedIn, openKeyPhraseModal, wallet }) => {
             isSignedIn
               ? (
                 <>
+                  <Navbar.Item>
+                    <Button auto onPress={() => setIsAddRecordModalOpen(true)}>
+                      Add password
+                    </Button>
+                  </Navbar.Item>
                   <Navbar.Item>
                     <Button auto flat onPress={openKeyPhraseModal}>
                       Change passphrase
@@ -45,6 +58,12 @@ export default ({ isSignedIn, openKeyPhraseModal, wallet }) => {
         </Navbar.Content>
       </Navbar>
       <Spacer y={3} />
+      <AddRecord
+        PasswordManagerSC={PasswordManagerSC}
+        setIsOpen={setIsAddRecordModalOpen}
+        isOpen={isAddRecordModalOpen}
+        keyPhrase={keyPhrase}
+      />
     </>
   )
 }
