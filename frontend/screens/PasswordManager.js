@@ -48,7 +48,6 @@ export default ({ PasswordManagerSC, keyPhrase, wallet, ...restProps }) => {
     }
   }
   React.useEffect(() => {
-    console.log('PasswordManagerSC', PasswordManagerSC.getPasswordRecord)
     const getPasswordRecords = async () => {
       const passwordRecords = await PasswordManagerSC.getPasswordRecord(wallet?.accountId)
       setContractResponse(passwordRecords)
