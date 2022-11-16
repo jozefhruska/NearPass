@@ -53,11 +53,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "alias": {
-    "process": {
-      "crypto-hash": "crypto-hash/browser",
-      "global": "process"
-    }
   }
 }
