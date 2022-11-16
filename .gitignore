@@ -9,6 +9,7 @@ node_modules
 /out
 /dist
 */build/*
+public
 
 # keys
 /templates/react/neardev
