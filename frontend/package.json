@@ -56,6 +56,7 @@
   },
   "alias": {
     "process": {
+      "crypto-hash": "crypto-hash/browser",
       "global": "process"
     }
   }
