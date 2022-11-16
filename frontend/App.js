@@ -41,7 +41,6 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
         <Modal
           aria-labelledby="Enter passphrase"
           blur
-          closeButton={!isFirstKeyPhraseEnter}
           open={isKeyPhraseModalVisible}
           onClose={() => setKeyPhraseModalVisible(false)}
           preventClose={isFirstKeyPhraseEnter || isIncorrectPassPhrase}
