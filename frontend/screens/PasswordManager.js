@@ -9,11 +9,11 @@ export default ({
   keyPhrase,
   wallet,
   isAddRecordModalOpen,
+  setIsIncorrectPassPhrase,
   setIsAddRecordModalOpen,
 }) => {
   const [contractResponse, setContractResponse] = React.useState([]);
   const [decryptedContractResponse, setDecryptedContractResponse] = React.useState([]);
-  const [isIncorrectPassPhrase, setIsIncorrectPassPhrase] = React.useState(false)
   const [activeRecord, setActiveRecord] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const decipherAndSetText = (passwordRecords) => {
@@ -73,15 +73,6 @@ export default ({
     { name: "WEBSITE", uid: "link" },
     { name: "ACTIONS", uid: "actions" },
   ]
-  if (isIncorrectPassPhrase) {
-    return (
-      <Container md>
-        <Text>
-          Please enter correct passphrase
-        </Text>
-      </Container>
-    )
-  }
   return (
     <Container md>
       <Table

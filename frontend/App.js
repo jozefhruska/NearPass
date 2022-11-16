@@ -9,6 +9,7 @@ import NavBar from './components/NavBar';
 
 export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
   const [keyPhrase, setKeyPhrase] = React.useState('');
+  const [isIncorrectPassPhrase, setIsIncorrectPassPhrase] = React.useState(false)
   const [isKeyPhraseModalVisible, setKeyPhraseModalVisible] = React.useState(!keyPhrase && isSignedIn);
   const [isFirstKeyPhraseEnter, setIsFirstKeyPhraseEnter] = React.useState(!keyPhrase);
   const [isAddRecordModalOpen, setIsAddRecordModalOpen] = React.useState(false);
@@ -26,11 +27,12 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
         isSignedIn
           ? (
             <PasswordManager
-              PasswordManagerSC={PasswordManagerSC}
-              keyPhrase={keyPhrase}
-              wallet={wallet}
               isAddRecordModalOpen={isAddRecordModalOpen}
+              keyPhrase={keyPhrase}
+              PasswordManagerSC={PasswordManagerSC}
               setIsAddRecordModalOpen={setIsAddRecordModalOpen}
+              setIsIncorrectPassPhrase={setIsIncorrectPassPhrase}
+              wallet={wallet}
             />
           )
           : <Intro wallet={wallet} />
@@ -42,7 +44,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
           closeButton={!isFirstKeyPhraseEnter}
           open={isKeyPhraseModalVisible}
           onClose={() => setKeyPhraseModalVisible(false)}
-          preventClose={isFirstKeyPhraseEnter}
+          preventClose={isFirstKeyPhraseEnter || isIncorrectPassPhrase}
         >
           <Modal.Header>
             {
@@ -70,11 +72,19 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
                 placeholder="Password"
                 value={keyPhrase}
                 size="lg"
+                helperColor="error"
+                helperText={keyPhrase && isIncorrectPassPhrase ? 'Incorrect passphrase' : ''}
               />
+              <Spacer y={0}/>
             </Modal.Body>
             <Modal.Footer justify="center">
               <Button
                 auto
+                disabled={
+                  isFirstKeyPhraseEnter
+                    ? false
+                    : !keyPhrase || isIncorrectPassPhrase
+                }
                 flat
                 onPress={() =>
                   isFirstKeyPhraseEnter
@@ -89,7 +99,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
               </Button>
               <Button
                 auto
-                disabled={!keyPhrase}
+                disabled={!keyPhrase || isIncorrectPassPhrase}
                 onPress={
                   () => {
                     setKeyPhraseModalVisible(false)
