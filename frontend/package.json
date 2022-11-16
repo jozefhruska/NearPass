@@ -33,6 +33,7 @@
     "@near-wallet-selector/wallet-connect": "^7.0.0",
     "@nextui-org/react": "^1.0.0-beta.10",
     "crypto-js": "^4.1.1",
+    "firebase": "^9.13.0",
     "near-api-js": "^0.44.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",

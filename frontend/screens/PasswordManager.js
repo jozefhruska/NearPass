@@ -3,6 +3,7 @@ import { AES, enc } from 'crypto-js';
 import { Container, Table, Text } from '@nextui-org/react';
 import PasswordCell from '../components/PasswordCell';
 import { AddRecord } from '../components/modals/AddRecord';
+import { firestoreHttpsCallable } from '../helpers/util';
 
 export default ({
   PasswordManagerSC,
@@ -16,33 +17,31 @@ export default ({
   const [decryptedContractResponse, setDecryptedContractResponse] = React.useState([]);
   const [activeRecord, setActiveRecord] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
-  const decipherAndSetText = (passwordRecords) => {
+  const decipherAndSetText = async (passwordRecords) => {
     let didFail = false
-    const decryptedPasswordRecords = (passwordRecords || contractResponse).map(({
-      index,
-      link,
-      passwordName,
-      password,
-      username,
-    }, id) => {
-      const passwordNameBytes = AES.decrypt(passwordName, keyPhrase);
-      const passwordBytes = AES.decrypt(password, keyPhrase);
-      const usernameBytes = username ? AES.decrypt(username, keyPhrase) : '';
-      const linkBytes = link ? AES.decrypt(link, keyPhrase) : '';
+    const decryptedPasswordRecords = await Promise.all((passwordRecords || contractResponse).map(async (encryptedPasswordRecord, id) => {
       try {
-        const decryptedPasswordName = passwordNameBytes.toString(enc.Utf8);
-        const decryptedPassword = passwordBytes.toString(enc.Utf8);
-        const decryptedUsername = usernameBytes ? usernameBytes.toString(enc.Utf8) : '';
-        const decryptedLink = linkBytes ? linkBytes.toString(enc.Utf8) : '';
-        if (decryptedPasswordName && decryptedPassword) {
+        const responseDecrypt = await firestoreHttpsCallable('secondRoundDecrypt', {
+          passwordRecord: encryptedPasswordRecord,
+          userId: wallet?.accountId,
+        })
+        const decryptedPasswordRecord = responseDecrypt?.data?.passwordRecord
+        const decryptedFirstRound = {
+          index: decryptedPasswordRecord.index,
+          link: decryptedPasswordRecord.link
+            ? AES.decrypt(decryptedPasswordRecord.link, keyPhrase).toString(enc.Utf8)
+            : '',
+          username: decryptedPasswordRecord.username
+            ? AES.decrypt(decryptedPasswordRecord.username, keyPhrase).toString(enc.Utf8)
+            : '',
+          password: AES.decrypt(decryptedPasswordRecord.password, keyPhrase).toString(enc.Utf8),
+          passwordName: AES.decrypt(decryptedPasswordRecord.passwordName, keyPhrase).toString(enc.Utf8),
+        }
+        if (decryptedFirstRound.passwordName && decryptedFirstRound.password) {
           setIsIncorrectPassPhrase(false)
           return ({
             id,
-            index,
-            passwordName: decryptedPasswordName,
-            password: decryptedPassword,
-            username: decryptedUsername,
-            link: decryptedLink,
+            ...decryptedFirstRound,
           })
         } else {
           setIsIncorrectPassPhrase(true)
@@ -52,7 +51,7 @@ export default ({
         setIsIncorrectPassPhrase(true)
         didFail = true
       }
-    })
+    }))
     if (!didFail) {
       setDecryptedContractResponse(decryptedPasswordRecords)
     }
@@ -126,6 +125,7 @@ export default ({
           isOpen={isAddRecordModalOpen}
           keyPhrase={keyPhrase}
           editingRecord={activeRecord}
+          wallet={wallet}
         />
       }
     </Container>

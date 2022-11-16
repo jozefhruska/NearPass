@@ -1,9 +1,10 @@
 import React from "react";
 import { Text, Button, Modal, Spacer, Input, Loading } from '@nextui-org/react';
-import { AES } from 'crypto-js';
+import { AES, enc } from 'crypto-js';
 import { toast } from 'react-toastify';
+import { firestoreHttpsCallable } from '../../helpers/util';
 
-export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase, editingRecord }) => {
+export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase, editingRecord, wallet }) => {
   const [passwordName, setPasswordName] = React.useState(
     editingRecord?.passwordName || ''
   );
@@ -27,13 +28,19 @@ export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase, edi
       const encryptedLink = AES.encrypt(link, keyPhrase).toString();
       const encryptedPasswordName = AES.encrypt(passwordName, keyPhrase).toString();
       const encryptedUsername = AES.encrypt(username, keyPhrase).toString();
-      await PasswordManagerSC.setPasswordRecord({
+      const firstRoundEncryptedPasswordRecord = {
         ...(link ? {link: encryptedLink} : {}),
         ...(username ? {username: encryptedUsername} : {}),
         password: encryptedPassword,
         passwordName: encryptedPasswordName,
-        ...(editingRecord ? {index: editingRecord.index} : {}),
+        ...(editingRecord ? {index: editingRecord.index} : {})
+      }
+      const response = await firestoreHttpsCallable('secondRoundEncrypt', {
+        passwordRecord: firstRoundEncryptedPasswordRecord,
+        userId: wallet?.accountId,
       })
+      const encryptedPasswordRecord = response?.data?.passwordRecord
+      await PasswordManagerSC.setPasswordRecord(encryptedPasswordRecord)
       setIsLoading(false);
       return true
     } catch (e) {
