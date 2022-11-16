@@ -1,16 +1,18 @@
 import React from "react";
-import { Text, Button, Modal, Spacer, Input } from '@nextui-org/react';
+import { Text, Button, Modal, Spacer, Input, Loading } from '@nextui-org/react';
 import { AES } from 'crypto-js';
 import { toast } from 'react-toastify';
 
-export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase }) => {
-  const [passwordName, setPasswordName] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [username, setUsername] = React.useState('');
-  const [link, setLink] = React.useState('');
+export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase, editingRecord }) => {
+  const [passwordName, setPasswordName] = React.useState(
+    editingRecord?.passwordName || ''
+  );
+  const [password, setPassword] = React.useState(editingRecord?.password || '');
+  const [username, setUsername] = React.useState(editingRecord?.username || '');
+  const [link, setLink] = React.useState(editingRecord?.link || '');
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const addRecord = () => {
+  const addRecord = async() => {
     if (!password) {
       toast.warn('Password field is mandatory')
       return false
@@ -20,19 +22,25 @@ export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase }) =
       return false
     }
     setIsLoading(true);
-    const encryptedPassword = AES.encrypt(password, keyPhrase).toString();
-    const encryptedLink = AES.encrypt(link, keyPhrase).toString();
-    const encryptedPasswordName = AES.encrypt(passwordName, keyPhrase).toString();
-    const encryptedUsername = AES.encrypt(username, keyPhrase).toString();
-    PasswordManagerSC.setPasswordRecord({
-      ...(link ? { link: encryptedLink } : {}),
-      ...(username ? { username: encryptedUsername } : {}),
-      password: encryptedPassword,
-      passwordName: encryptedPasswordName,
-    }).finally(() => {
-        setIsLoading(false);
-      });
-    return true
+    try {
+      const encryptedPassword = AES.encrypt(password, keyPhrase).toString();
+      const encryptedLink = AES.encrypt(link, keyPhrase).toString();
+      const encryptedPasswordName = AES.encrypt(passwordName, keyPhrase).toString();
+      const encryptedUsername = AES.encrypt(username, keyPhrase).toString();
+      await PasswordManagerSC.setPasswordRecord({
+        ...(link ? {link: encryptedLink} : {}),
+        ...(username ? {username: encryptedUsername} : {}),
+        password: encryptedPassword,
+        passwordName: encryptedPasswordName,
+        ...(editingRecord ? {index: editingRecord.index} : {}),
+      })
+      setIsLoading(false);
+      return true
+    } catch (e) {
+      toast.error('Unable to save your password, try again later.')
+      setIsLoading(false);
+      return false
+    }
   }
   return (
     <Modal
@@ -109,6 +117,7 @@ export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase }) =
           </Button>
           <Button
             auto
+            disabled={isLoading}
             onPress={() => {
               const responseStatus = addRecord();
               if (responseStatus) {
@@ -116,7 +125,13 @@ export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase }) =
               }
             }}
             type="submit">
-            Save
+            {
+              isLoading
+                ? (
+                  <Loading color="currentColor" />
+                )
+                : 'Save'
+            }
           </Button>
         </Modal.Footer>
       </form>

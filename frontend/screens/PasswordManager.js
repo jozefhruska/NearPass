@@ -1,22 +1,30 @@
 import React from 'react';
 import { AES, enc } from 'crypto-js';
-import { Container, Table } from '@nextui-org/react';
+import { Container, Table, Text } from '@nextui-org/react';
 import PasswordCell from '../components/PasswordCell';
+import { AddRecord } from '../components/modals/AddRecord';
 
-export default ({ PasswordManagerSC, keyPhrase, wallet, ...restProps }) => {
+export default ({
+  PasswordManagerSC,
+  keyPhrase,
+  wallet,
+  isAddRecordModalOpen,
+  setIsAddRecordModalOpen,
+}) => {
   const [contractResponse, setContractResponse] = React.useState([]);
   const [decryptedContractResponse, setDecryptedContractResponse] = React.useState([]);
   const [isIncorrectPassPhrase, setIsIncorrectPassPhrase] = React.useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+  const [activeRecord, setActiveRecord] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const decipherAndSetText = (passwordRecords) => {
     let didFail = false
     const decryptedPasswordRecords = (passwordRecords || contractResponse).map(({
+      index,
       link,
       passwordName,
       password,
       username,
-    }, index) => {
+    }, id) => {
       const passwordNameBytes = AES.decrypt(passwordName, keyPhrase);
       const passwordBytes = AES.decrypt(password, keyPhrase);
       const usernameBytes = username ? AES.decrypt(username, keyPhrase) : '';
@@ -27,8 +35,10 @@ export default ({ PasswordManagerSC, keyPhrase, wallet, ...restProps }) => {
         const decryptedUsername = usernameBytes ? usernameBytes.toString(enc.Utf8) : '';
         const decryptedLink = linkBytes ? linkBytes.toString(enc.Utf8) : '';
         if (decryptedPasswordName && decryptedPassword) {
+          setIsIncorrectPassPhrase(false)
           return ({
-            id: index,
+            id,
+            index,
             passwordName: decryptedPasswordName,
             password: decryptedPassword,
             username: decryptedUsername,
@@ -55,8 +65,6 @@ export default ({ PasswordManagerSC, keyPhrase, wallet, ...restProps }) => {
     }
     getPasswordRecords()
   }, [])
-  const changeGreeting = (e) => {
-  }
   React.useEffect(() => {
     decipherAndSetText()
   }, [keyPhrase])
@@ -65,7 +73,15 @@ export default ({ PasswordManagerSC, keyPhrase, wallet, ...restProps }) => {
     { name: "WEBSITE", uid: "link" },
     { name: "ACTIONS", uid: "actions" },
   ]
-
+  if (isIncorrectPassPhrase) {
+    return (
+      <Container md>
+        <Text>
+          Please enter correct passphrase
+        </Text>
+      </Container>
+    )
+  }
   return (
     <Container md>
       <Table
@@ -95,7 +111,10 @@ export default ({ PasswordManagerSC, keyPhrase, wallet, ...restProps }) => {
                   <PasswordCell
                     record={record}
                     columnKey={columnKey}
-                    openEditModal={() => setIsEditModalOpen(true)}
+                    openEditModal={(record) => {
+                      setActiveRecord(record)
+                      setIsAddRecordModalOpen(true)
+                    }}
                   />
                 </Table.Cell>
               )}
@@ -103,6 +122,21 @@ export default ({ PasswordManagerSC, keyPhrase, wallet, ...restProps }) => {
           )}
         </Table.Body>
       </Table>
+      { isAddRecordModalOpen &&
+        <AddRecord
+          PasswordManagerSC={PasswordManagerSC}
+          setIsOpen={(value) => {
+            // If value is false (modal is closing), reset active record
+            if (!value) {
+              setActiveRecord(null)
+              setIsAddRecordModalOpen(value)
+            }
+          }}
+          isOpen={isAddRecordModalOpen}
+          keyPhrase={keyPhrase}
+          editingRecord={activeRecord}
+        />
+      }
     </Container>
   )
 }

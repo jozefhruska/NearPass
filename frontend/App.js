@@ -11,6 +11,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
   const [keyPhrase, setKeyPhrase] = React.useState('');
   const [isKeyPhraseModalVisible, setKeyPhraseModalVisible] = React.useState(!keyPhrase && isSignedIn);
   const [isFirstKeyPhraseEnter, setIsFirstKeyPhraseEnter] = React.useState(!keyPhrase);
+  const [isAddRecordModalOpen, setIsAddRecordModalOpen] = React.useState(false);
   return (
     <>
       <NavBar
@@ -19,6 +20,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
         keyPhrase={keyPhrase}
         openKeyPhraseModal={() => setKeyPhraseModalVisible(true)}
         wallet={wallet}
+        setIsAddRecordModalOpen={setIsAddRecordModalOpen}
       />
       {
         isSignedIn
@@ -27,6 +29,8 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
               PasswordManagerSC={PasswordManagerSC}
               keyPhrase={keyPhrase}
               wallet={wallet}
+              isAddRecordModalOpen={isAddRecordModalOpen}
+              setIsAddRecordModalOpen={setIsAddRecordModalOpen}
             />
           )
           : <Intro wallet={wallet} />

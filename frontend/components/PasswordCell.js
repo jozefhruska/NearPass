@@ -68,7 +68,7 @@ export default ({ record, columnKey, openEditModal }) => {
           </Col>
           <Col css={{ d: "flex" }}>
             <Tooltip content="Edit record">
-              <IconButton onClick={openEditModal}>
+              <IconButton onClick={() => openEditModal(record)}>
                 <EditIcon size={20} fill="#979797" />
               </IconButton>
             </Tooltip>

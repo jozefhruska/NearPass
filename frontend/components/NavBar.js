@@ -1,15 +1,12 @@
 import React from 'react';
 import { Button, Navbar, Spacer, Text } from '@nextui-org/react';
-import { AddRecord } from './modals/AddRecord';
 
 export default ({
   isSignedIn,
   openKeyPhraseModal,
   wallet,
-  PasswordManagerSC,
-  keyPhrase,
+  setIsAddRecordModalOpen,
 }) => {
-  const [isAddRecordModalOpen, setIsAddRecordModalOpen] = React.useState(false);
   return (
     <>
       <Navbar isBordered variant="static">
@@ -58,12 +55,6 @@ export default ({
         </Navbar.Content>
       </Navbar>
       <Spacer y={3} />
-      <AddRecord
-        PasswordManagerSC={PasswordManagerSC}
-        setIsOpen={setIsAddRecordModalOpen}
-        isOpen={isAddRecordModalOpen}
-        keyPhrase={keyPhrase}
-      />
     </>
   )
 }

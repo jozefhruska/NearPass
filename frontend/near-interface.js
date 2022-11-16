@@ -11,15 +11,19 @@ export class NEARPasswordManager {
   }
 
   async setPasswordRecord({
+    index,
     link,
     passwordName,
     password,
     username,
   }) {
+    console.log('index', index)
     return await this.wallet.callMethod({
       contractId: this.contractId,
       method: 'set_password_record',
       args: {
+        index,
+        sr: index,
         link,
         passwordName,
         password,
