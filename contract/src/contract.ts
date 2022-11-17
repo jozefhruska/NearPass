@@ -31,7 +31,7 @@ class PasswordManager {
     index: number,
   }): void {
     let accountId = near.signerAccountId();
-    assert(!!index, 'Index has to be present to delete a password!');
+    assert(index !== undefined, 'Index has to be present to delete a password!');
     assert(typeof index === 'number', 'Index has to be of type number!');
     const currentlyStoredPasswords = this.records.get(accountId) || [];
     assert(
@@ -39,7 +39,11 @@ class PasswordManager {
       'This record does not exist in this account!'
     );
     const newRecords = currentlyStoredPasswords.filter(record => record.index !== index)
-    this.records.set(accountId, newRecords)
+    const newRecordsReindexed = newRecords.map((record, i) => ({
+      ...record,
+      index: i,
+    }))
+    this.records.set(accountId, newRecordsReindexed)
   }
 
   @call({})
