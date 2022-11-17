@@ -18,7 +18,8 @@ export default ({
   const [activeRecord, setActiveRecord] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const decipherAndSetText = async (passwordRecords) => {
-    let didFail = false
+    let didFail = false;
+    let wasOnePasswordCorrect = false;
     const decryptedPasswordRecords = await Promise.all((passwordRecords || contractResponse).map(async (encryptedPasswordRecord, id) => {
       try {
         const responseDecrypt = await firestoreHttpsCallable('secondRoundDecrypt', {
@@ -38,23 +39,20 @@ export default ({
           passwordName: AES.decrypt(decryptedPasswordRecord.passwordName, keyPhrase).toString(enc.Utf8),
         }
         if (decryptedFirstRound.passwordName && decryptedFirstRound.password) {
-          setIsIncorrectPassPhrase(false)
+          wasOnePasswordCorrect = true
           return ({
             id,
             ...decryptedFirstRound,
           })
-        } else {
-          setIsIncorrectPassPhrase(true)
         }
       } catch(e) {
-        // Sometimes when entering wrong password too quickly we get Malformed UTF-8 data error
-        setIsIncorrectPassPhrase(true)
         didFail = true
       }
     }))
     if (!didFail) {
       setDecryptedContractResponse(decryptedPasswordRecords)
     }
+    setIsIncorrectPassPhrase(!wasOnePasswordCorrect)
   }
   React.useEffect(() => {
     const getPasswordRecords = async () => {
