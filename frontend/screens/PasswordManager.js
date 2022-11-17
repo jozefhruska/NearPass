@@ -40,6 +40,7 @@ export default ({
           passwordName: AES.decrypt(decryptedPasswordRecord.passwordName, keyPhrase).toString(enc.Utf8),
         }
         if (decryptedFirstRound.passwordName && decryptedFirstRound.password) {
+          setIsIncorrectPassPhrase(true)
           wasOnePasswordCorrect = true
           return ({
             id,

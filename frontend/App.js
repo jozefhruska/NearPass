@@ -115,7 +115,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
                     ? (
                       <Loading color="currentColor" />
                     )
-                    : 'Save'
+                    : 'Enter'
                 }
               </Button>
             </Modal.Footer>
