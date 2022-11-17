@@ -25,11 +25,11 @@ export default ({
                       Add password
                     </Button>
                   </Navbar.Item>
-                  <Navbar.Item>
-                    <Button auto flat onPress={openKeyPhraseModal}>
-                      Change passphrase
-                    </Button>
-                  </Navbar.Item>
+                  {/*<Navbar.Item>*/}
+                  {/*  <Button auto flat onPress={openKeyPhraseModal}>*/}
+                  {/*    Change passphrase*/}
+                  {/*  </Button>*/}
+                  {/*</Navbar.Item>*/}
                   <Navbar.Item>
                     <Button auto flat onPress={() => wallet.signOut()}>
                       Sign out {wallet?.accountId}
