@@ -2,7 +2,27 @@ import React from "react";
 import { Text, Button, Modal, Spacer, Input, Loading } from '@nextui-org/react';
 import { AES, enc } from 'crypto-js';
 import { toast } from 'react-toastify';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
 import { firestoreHttpsCallable } from '../../helpers/util';
+
+const RecordSchema = Yup.object().shape({
+  username: Yup.string()
+    .min(4, 'Username is too short')
+    .max(24, 'Username is too long')
+    .required('This field is mandatory'),
+  link: Yup.string()
+    .url('Invalid URL')
+    .required('This field is mandatory'),
+  passwordName: Yup.string()
+    .min(4, 'Password name is too short')
+    .max(24, 'Password name is too long')
+    .required('This field is mandatory'),
+  password: Yup.string()
+    .min(6, 'Password must be at least 6 characters')
+    .max(24, 'Password can be maximum 24 characters')
+    .required('This field is mandatory')
+})
 
 export const AddRecord = ({
   isOpen,
@@ -13,23 +33,9 @@ export const AddRecord = ({
   editingRecord,
   wallet,
 }) => {
-  const [passwordName, setPasswordName] = React.useState(
-    editingRecord?.passwordName || ''
-  );
-  const [password, setPassword] = React.useState(editingRecord?.password || '');
-  const [username, setUsername] = React.useState(editingRecord?.username || '');
-  const [link, setLink] = React.useState(editingRecord?.link || '');
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const addRecord = async() => {
-    if (!password) {
-      toast.warn('Password field is mandatory')
-      return false
-    }
-    if (!passwordName) {
-      toast.warn('Password name field is mandatory')
-      return false
-    }
+  const addRecord = async({ password, link, passwordName, username }) => {
     setIsLoading(true);
     try {
       const encryptedPassword = AES.encrypt(password, keyPhrase).toString();
@@ -60,6 +66,18 @@ export const AddRecord = ({
       return false
     }
   }
+
+  const formik = useFormik({
+    initialValues: {
+      passwordName: editingRecord?.passwordName || '',
+      password: editingRecord?.password || '',
+      username: editingRecord?.username || '',
+      link: editingRecord?.link || '',
+    },
+    onSubmit: values => addRecord(values),
+    validationSchema: RecordSchema,
+    validateOnBlur: true,
+  });
   return (
     <Modal
       aria-labelledby="Add record"
@@ -76,56 +94,78 @@ export const AddRecord = ({
       <form onSubmit={
         (e) => {
           e.preventDefault();
+          formik.handleSubmit()
         }}>
         <Modal.Body>
-          <Spacer y={0}/>
+          <Spacer y={1}/>
           <Input
+            id="passwordName"
+            name="passwordName"
             bordered
             clearable
             color="primary"
             labelPlaceholder="Password name*"
             fullWidth
-            onChange={({target: {value}}) => setPasswordName(value)}
+            onChange={formik.handleChange}
             placeholder="Password name"
-            value={passwordName}
+            value={formik.values.passwordName}
             size="lg"
+            helperColor="error"
+            helperText={formik.errors.passwordName}
+            onBlur={formik.handleBlur}
           />
-          <Spacer y={0}/>
+          <Spacer y={1}/>
           <Input
+            id="username"
+            name="username"
             bordered
             clearable
             color="primary"
             labelPlaceholder="Username"
             fullWidth
-            onChange={({target: {value}}) => setUsername(value)}
+            onChange={formik.handleChange}
             placeholder="Username"
-            value={username}
+            value={formik.values.username}
             size="lg"
+            helperColor="error"
+            helperText={formik.errors.username}
+            onBlur={formik.handleBlur}
           />
-          <Spacer y={0}/>
+          <Spacer y={1}/>
           <Input.Password
+            id="password"
+            name="password"
             bordered
             clearable
             color="primary"
             labelPlaceholder="Password*"
             fullWidth
-            onChange={({target: {value}}) => setPassword(value)}
+            onChange={formik.handleChange}
             placeholder="Password"
-            value={password}
+            value={formik.values.password}
             size="lg"
+            helperColor="error"
+            helperText={formik.errors.password}
+            onBlur={formik.handleBlur}
           />
-          <Spacer y={0}/>
+          <Spacer y={1}/>
           <Input
+            id="link"
+            name="link"
             bordered
             clearable
             color="primary"
             labelPlaceholder="Website (link)"
             fullWidth
-            onChange={({target: {value}}) => setLink(value)}
+            onChange={formik.handleChange}
             placeholder="Website"
-            value={link}
+            value={formik.values.link}
+            helperColor="error"
+            helperText={formik.errors.link}
             size="lg"
+            onBlur={formik.handleBlur}
           />
+          <Spacer y={0}/>
         </Modal.Body>
         <Modal.Footer justify="center">
           <Button
@@ -137,8 +177,7 @@ export const AddRecord = ({
           </Button>
           <Button
             auto
-            disabled={isLoading}
-            onPress={addRecord}
+            disabled={isLoading || Object.values(formik.errors).length}
             type="submit">
             {
               isLoading
