@@ -73,7 +73,7 @@ export const AddRecord = ({
       passwordName: editingRecord?.passwordName || '',
       password: editingRecord?.password || '',
       username: editingRecord?.username || '',
-      link: editingRecord?.link || '',
+      link: editingRecord?.link?.replace('https://', '') || '',
     },
     onSubmit: values => addRecord(values),
     validationSchema: RecordSchema,
@@ -155,7 +155,7 @@ export const AddRecord = ({
             label="Website (link)"
             fullWidth
             onChange={formik.handleChange}
-            placeholder="Website"
+            placeholder="www.example.com"
             value={formik.values.link}
             helperColor="error"
             helperText={formik.errors.link}
