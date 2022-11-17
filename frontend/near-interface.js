@@ -22,7 +22,6 @@ export class NEARPasswordManager {
       method: 'set_password_record',
       args: {
         index,
-        sr: index,
         link,
         passwordName,
         password,
