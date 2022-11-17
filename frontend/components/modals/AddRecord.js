@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, Button, Modal, Spacer, Input, Loading } from '@nextui-org/react';
-import { AES, enc } from 'crypto-js';
+import { AES } from 'crypto-js';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
@@ -12,7 +12,7 @@ const RecordSchema = Yup.object().shape({
     .max(24, 'Username is too long')
     .required('This field is mandatory'),
   link: Yup.string()
-    .url('Invalid URL')
+    .matches('^(http:\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$', 'Invalid URL')
     .required('This field is mandatory'),
   passwordName: Yup.string()
     .min(4, 'Password name is too short')
@@ -43,8 +43,8 @@ export const AddRecord = ({
       const encryptedPasswordName = AES.encrypt(passwordName, keyPhrase).toString();
       const encryptedUsername = AES.encrypt(username, keyPhrase).toString();
       const firstRoundEncryptedPasswordRecord = {
-        ...(link ? {link: encryptedLink} : {}),
-        ...(username ? {username: encryptedUsername} : {}),
+        link: encryptedLink,
+        username: encryptedUsername,
         password: encryptedPassword,
         passwordName: encryptedPasswordName,
         ...(editingRecord ? {index: editingRecord.index} : {})
@@ -76,7 +76,6 @@ export const AddRecord = ({
     },
     onSubmit: values => addRecord(values),
     validationSchema: RecordSchema,
-    validateOnBlur: true,
   });
   return (
     <Modal
@@ -97,14 +96,13 @@ export const AddRecord = ({
           formik.handleSubmit()
         }}>
         <Modal.Body>
-          <Spacer y={1}/>
           <Input
             id="passwordName"
             name="passwordName"
             bordered
             clearable
             color="primary"
-            labelPlaceholder="Password name*"
+            label="Password name"
             fullWidth
             onChange={formik.handleChange}
             placeholder="Password name"
@@ -114,14 +112,13 @@ export const AddRecord = ({
             helperText={formik.errors.passwordName}
             onBlur={formik.handleBlur}
           />
-          <Spacer y={1}/>
           <Input
             id="username"
             name="username"
             bordered
             clearable
             color="primary"
-            labelPlaceholder="Username"
+            label="Username"
             fullWidth
             onChange={formik.handleChange}
             placeholder="Username"
@@ -131,14 +128,13 @@ export const AddRecord = ({
             helperText={formik.errors.username}
             onBlur={formik.handleBlur}
           />
-          <Spacer y={1}/>
           <Input.Password
             id="password"
             name="password"
             bordered
             clearable
             color="primary"
-            labelPlaceholder="Password*"
+            label="Password"
             fullWidth
             onChange={formik.handleChange}
             placeholder="Password"
@@ -148,14 +144,14 @@ export const AddRecord = ({
             helperText={formik.errors.password}
             onBlur={formik.handleBlur}
           />
-          <Spacer y={1}/>
           <Input
+            labelLeft="https://"
             id="link"
             name="link"
             bordered
             clearable
             color="primary"
-            labelPlaceholder="Website (link)"
+            label="Website (link)"
             fullWidth
             onChange={formik.handleChange}
             placeholder="Website"
