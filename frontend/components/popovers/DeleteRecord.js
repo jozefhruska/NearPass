@@ -30,6 +30,7 @@ export const DeleteRecord = ({ closePopover, getPasswordRecords, index, Password
           <Button
             size="sm"
             shadow color="error"
+            disabled={isLoading}
             onPress={
               async () => {
                 setIsLoading(true)
@@ -42,7 +43,7 @@ export const DeleteRecord = ({ closePopover, getPasswordRecords, index, Password
             {
               isLoading
                 ? (
-                  <Loading color="currentColor" />
+                  <Loading color="currentColor" type="points" />
                 )
                 : 'Delete'
             }

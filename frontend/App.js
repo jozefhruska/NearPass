@@ -113,7 +113,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
                 {
                   isDecyphering && keyPhrase
                     ? (
-                      <Loading color="currentColor" />
+                      <Loading color="currentColor" type="points" />
                     )
                     : 'Enter'
                 }

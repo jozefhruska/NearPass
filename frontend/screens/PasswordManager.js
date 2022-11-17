@@ -1,6 +1,6 @@
 import React from 'react';
 import { AES, enc } from 'crypto-js';
-import { Container, Table, Text } from '@nextui-org/react';
+import { Container, Table, Button } from '@nextui-org/react';
 import PasswordCell from '../components/PasswordCell';
 import { AddRecord } from '../components/modals/AddRecord';
 import { firestoreHttpsCallable } from '../helpers/util';
@@ -40,7 +40,7 @@ export default ({
           passwordName: AES.decrypt(decryptedPasswordRecord.passwordName, keyPhrase).toString(enc.Utf8),
         }
         if (decryptedFirstRound.passwordName && decryptedFirstRound.password) {
-          setIsIncorrectPassPhrase(true)
+          setIsIncorrectPassPhrase(false)
           wasOnePasswordCorrect = true
           return ({
             id,
@@ -52,7 +52,7 @@ export default ({
       }
     }))
     if (!didFail) {
-      setDecryptedContractResponse(decryptedPasswordRecords)
+      setDecryptedContractResponse(decryptedPasswordRecords.filter(value => value))
     }
     setIsIncorrectPassPhrase(!wasOnePasswordCorrect)
     setIsDecyphering(false)
@@ -61,14 +61,21 @@ export default ({
   const getPasswordRecords = async () => {
     const passwordRecords = await PasswordManagerSC.getPasswordRecord(wallet?.accountId)
     setContractResponse(passwordRecords)
-    await decipherAndSetText(passwordRecords)
+    if (passwordRecords.length) {
+      await decipherAndSetText(passwordRecords)
+    } else { // In case user has no passwords yet, accept any string
+      setDecryptedContractResponse([])
+      setIsIncorrectPassPhrase(false)
+    }
   }
 
   React.useEffect(() => {
     getPasswordRecords()
   }, [])
   React.useEffect(() => {
-    decipherAndSetText()
+    if (contractResponse.length) {
+      decipherAndSetText()
+    }
   }, [keyPhrase])
   const columns = [
     { name: "PASSWORD NAME", uid: "passwordName" },
@@ -96,25 +103,38 @@ export default ({
             </Table.Column>
           )}
         </Table.Header>
-        <Table.Body items={decryptedContractResponse}>
-          {(record) => (
+        <Table.Body>
+          {
+            decryptedContractResponse.map((record) => (
+              <Table.Row>
+                {(columnKey) => (
+                  <Table.Cell>
+                    <PasswordCell
+                      record={record}
+                      columnKey={columnKey}
+                      openEditModal={(record) => {
+                        setActiveRecord(record)
+                        setIsAddRecordModalOpen(true)
+                      }}
+                      PasswordManagerSC={PasswordManagerSC}
+                      getPasswordRecords={getPasswordRecords}
+                    />
+                  </Table.Cell>
+                )}
+              </Table.Row>
+            ))
+          }
+          { !decryptedContractResponse.length &&
             <Table.Row>
-              {(columnKey) => (
-                <Table.Cell>
-                  <PasswordCell
-                    record={record}
-                    columnKey={columnKey}
-                    openEditModal={(record) => {
-                      setActiveRecord(record)
-                      setIsAddRecordModalOpen(true)
-                    }}
-                    PasswordManagerSC={PasswordManagerSC}
-                    getPasswordRecords={getPasswordRecords}
-                  />
-                </Table.Cell>
-              )}
+              <Table.Cell>
+                <Button light color="primary" auto onPress={() => setIsAddRecordModalOpen(true)}>
+                  Start by adding your first password here.
+                </Button>
+              </Table.Cell>
+              <Table.Cell/>
+              <Table.Cell/>
             </Table.Row>
-          )}
+          }
         </Table.Body>
       </Table>
       { isAddRecordModalOpen &&

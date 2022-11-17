@@ -49,6 +49,8 @@ export const AddRecord = ({
       })
       const encryptedPasswordRecord = response?.data?.passwordRecord
       await PasswordManagerSC.setPasswordRecord(encryptedPasswordRecord)
+      await getPasswordRecords()
+      setIsOpen(false);
       setIsLoading(false);
       toast.success(`Password ${editingRecord ? 'edited' : 'saved'} successfully 🎉`)
       return true
@@ -136,18 +138,12 @@ export const AddRecord = ({
           <Button
             auto
             disabled={isLoading}
-            onPress={async () => {
-              const responseStatus = await addRecord();
-              if (responseStatus) {
-                await getPasswordRecords()
-                setIsOpen(false);
-              }
-            }}
+            onPress={addRecord}
             type="submit">
             {
               isLoading
                 ? (
-                  <Loading color="currentColor" />
+                  <Loading color="currentColor" type="points" />
                 )
                 : 'Save'
             }
