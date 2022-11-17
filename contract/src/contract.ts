@@ -2,10 +2,10 @@ import { NearBindgen, near, call, view, UnorderedMap } from 'near-sdk-js';
 
 class PasswordRecord {
   index: number;
-  link?: string;
+  link: string;
   passwordName: string;
   password: string;
-  username?: string;
+  username: string;
 }
 const assert = (condition, message) => {
   if (!condition) {
@@ -58,8 +58,19 @@ class PasswordManager {
     link: string,
     passwordName: string,
     password: string,
-    username?: string,
+    username: string,
   }): void {
+    // Type checking
+    assert(typeof link === 'string', 'Parameter link has to be present and of string type to set a password record!');
+    assert(typeof passwordName === 'string', 'Parameter passwordName has to be present and of string type to set a password record!');
+    assert(typeof password === 'string', 'Parameter password has to be present and of string type to set a password record!');
+    assert(typeof username === 'string', 'Parameter username has to be present and of string type to set a password record!');
+    // Checking whether encrypted strings are within specified bounds
+    assert(link.length <= 152, 'Parameter link (URL) is too long to be stored in this smart contract.');
+    assert(passwordName.length <= 128, 'Parameter passwordName is too long to be stored in this smart contract.');
+    assert(password.length <= 128, 'Parameter password is too long to be stored in this smart contract.');
+    assert(username.length <= 128, 'Parameter username is too long to be stored in this smart contract.');
+
     let accountId = near.signerAccountId();
     const currentlyStoredPasswords = this.records.get(accountId) || []
     const newPasswordEntry: PasswordRecord = {

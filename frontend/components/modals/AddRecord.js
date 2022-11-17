@@ -12,6 +12,7 @@ const RecordSchema = Yup.object().shape({
     .max(24, 'Username is too long')
     .required('This field is mandatory'),
   link: Yup.string()
+    .max(32, 'Please shorten the website\'s URL.')
     .matches('^(http:\\/)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$', 'Invalid URL')
     .required('This field is mandatory'),
   passwordName: Yup.string()
@@ -39,7 +40,7 @@ export const AddRecord = ({
     setIsLoading(true);
     try {
       const encryptedPassword = AES.encrypt(password, keyPhrase).toString();
-      const encryptedLink = AES.encrypt(link, keyPhrase).toString();
+      const encryptedLink = AES.encrypt(`https://${link}`, keyPhrase).toString();
       const encryptedPasswordName = AES.encrypt(passwordName, keyPhrase).toString();
       const encryptedUsername = AES.encrypt(username, keyPhrase).toString();
       const firstRoundEncryptedPasswordRecord = {
