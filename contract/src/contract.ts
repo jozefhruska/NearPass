@@ -7,6 +7,11 @@ class PasswordRecord {
   password: string;
   username?: string;
 }
+const assert = (condition, message) => {
+  if (!condition) {
+    throw Error(message);
+  }
+}
 
 @NearBindgen({})
 class PasswordManager {
@@ -17,6 +22,24 @@ class PasswordManager {
     accountId,
   }): Array<PasswordRecord> {
     return this.records.get(accountId) || []
+  }
+
+  @call({})
+  delete_password_record({
+    index,
+  }: {
+    index: number,
+  }): void {
+    let accountId = near.signerAccountId();
+    assert(!!index, 'Index has to be present to delete a password!');
+    assert(typeof index === 'number', 'Index has to be of type number!');
+    const currentlyStoredPasswords = this.records.get(accountId) || [];
+    assert(
+      !!currentlyStoredPasswords.find(record => record.index === index),
+      'This record does not exist in this account!'
+    );
+    const newRecords = currentlyStoredPasswords.filter(record => record.index !== index)
+    this.records.set(accountId, newRecords)
   }
 
   @call({})

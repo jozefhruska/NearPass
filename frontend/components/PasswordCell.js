@@ -7,7 +7,7 @@ import { DeleteIcon } from './DeleteIcon';
 import { DeleteRecord } from './popovers/DeleteRecord';
 import { ViewRecord } from './popovers/ViewRecord';
 
-export default ({ record, columnKey, openEditModal }) => {
+export default ({ record, columnKey, getPasswordRecords, openEditModal, PasswordManagerSC }) => {
   const cellValue = record[columnKey];
   const [isDeletePopoverOpen, setIsDeletePopoverOpen] = React.useState(false);
   const [isViewPopoverOpen, setIsViewPopoverOpen] = React.useState(false);
@@ -85,7 +85,12 @@ export default ({ record, columnKey, openEditModal }) => {
                   </IconButton>
                 </Popover.Trigger>
                 <Popover.Content>
-                  <DeleteRecord closePopover={() => setIsDeletePopoverOpen(false)}/>
+                  <DeleteRecord
+                    closePopover={() => setIsDeletePopoverOpen(false)}
+                    getPasswordRecords={getPasswordRecords}
+                    index={record.index}
+                    PasswordManagerSC={PasswordManagerSC}
+                  />
                 </Popover.Content>
               </Popover>
             </Tooltip>

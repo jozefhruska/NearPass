@@ -4,7 +4,15 @@ import { AES, enc } from 'crypto-js';
 import { toast } from 'react-toastify';
 import { firestoreHttpsCallable } from '../../helpers/util';
 
-export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase, editingRecord, wallet }) => {
+export const AddRecord = ({
+  isOpen,
+  getPasswordRecords,
+  setIsOpen,
+  PasswordManagerSC,
+  keyPhrase,
+  editingRecord,
+  wallet,
+}) => {
   const [passwordName, setPasswordName] = React.useState(
     editingRecord?.passwordName || ''
   );
@@ -131,6 +139,7 @@ export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase, edi
             onPress={async () => {
               const responseStatus = await addRecord();
               if (responseStatus) {
+                await getPasswordRecords()
                 setIsOpen(false);
               }
             }}

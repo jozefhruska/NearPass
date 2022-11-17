@@ -54,12 +54,14 @@ export default ({
     }
     setIsIncorrectPassPhrase(!wasOnePasswordCorrect)
   }
+
+  const getPasswordRecords = async () => {
+    const passwordRecords = await PasswordManagerSC.getPasswordRecord(wallet?.accountId)
+    setContractResponse(passwordRecords)
+    await decipherAndSetText(passwordRecords)
+  }
+
   React.useEffect(() => {
-    const getPasswordRecords = async () => {
-      const passwordRecords = await PasswordManagerSC.getPasswordRecord(wallet?.accountId)
-      setContractResponse(passwordRecords)
-      decipherAndSetText(passwordRecords)
-    }
     getPasswordRecords()
   }, [])
   React.useEffect(() => {
@@ -103,6 +105,8 @@ export default ({
                       setActiveRecord(record)
                       setIsAddRecordModalOpen(true)
                     }}
+                    PasswordManagerSC={PasswordManagerSC}
+                    getPasswordRecords={getPasswordRecords}
                   />
                 </Table.Cell>
               )}
@@ -120,6 +124,7 @@ export default ({
               setIsAddRecordModalOpen(value)
             }
           }}
+          getPasswordRecords={getPasswordRecords}
           isOpen={isAddRecordModalOpen}
           keyPhrase={keyPhrase}
           editingRecord={activeRecord}

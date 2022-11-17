@@ -30,4 +30,16 @@ export class NEARPasswordManager {
       },
     });
   }
+
+  async deletePasswordRecord({
+    index,
+  }) {
+    return await this.wallet.callMethod({
+      contractId: this.contractId,
+      method: 'delete_password_record',
+      args: {
+        index,
+      },
+    });
+  }
 }
