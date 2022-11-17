@@ -42,6 +42,7 @@ export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase, edi
       const encryptedPasswordRecord = response?.data?.passwordRecord
       await PasswordManagerSC.setPasswordRecord(encryptedPasswordRecord)
       setIsLoading(false);
+      toast.success(`Password ${editingRecord ? 'edited' : 'saved'} successfully 🎉`)
       return true
     } catch (e) {
       toast.error('Unable to save your password, try again later.')
@@ -52,9 +53,10 @@ export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase, edi
   return (
     <Modal
       aria-labelledby="Add record"
-      closeButton
+      closeButton={!isLoading}
       open={isOpen}
       onClose={() => setIsOpen(false)}
+      preventClose={isLoading}
     >
       <Modal.Header>
         <Text id="modal-title" size={18}>
@@ -119,14 +121,15 @@ export const AddRecord = ({ isOpen, setIsOpen, PasswordManagerSC, keyPhrase, edi
           <Button
             auto
             flat
+            disabled={isLoading}
             onPress={() => setIsOpen(false)}>
             Close
           </Button>
           <Button
             auto
             disabled={isLoading}
-            onPress={() => {
-              const responseStatus = addRecord();
+            onPress={async () => {
+              const responseStatus = await addRecord();
               if (responseStatus) {
                 setIsOpen(false);
               }
