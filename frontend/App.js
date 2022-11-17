@@ -1,10 +1,11 @@
 import 'regenerator-runtime/runtime';
 import React from 'react';
-import { Button, Spacer, Text, Modal, Input } from '@nextui-org/react';
+import { Button, Spacer, Text, Modal, Input, Loading } from '@nextui-org/react';
 
 import Intro from './screens/Intro';
 import PasswordManager from './screens/PasswordManager';
 import NavBar from './components/NavBar';
+import { useDebounce } from './helpers/hooks';
 
 
 export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
@@ -13,12 +14,14 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
   const [isKeyPhraseModalVisible, setKeyPhraseModalVisible] = React.useState(!keyPhrase && isSignedIn);
   const [isFirstKeyPhraseEnter, setIsFirstKeyPhraseEnter] = React.useState(!keyPhrase);
   const [isAddRecordModalOpen, setIsAddRecordModalOpen] = React.useState(false);
+  const [isDecyphering, setIsDecyphering] = React.useState(false);
+  const debouncedKeyPhrase = useDebounce(keyPhrase, 250);
   return (
     <>
       <NavBar
         PasswordManagerSC={PasswordManagerSC}
         isSignedIn={isSignedIn}
-        keyPhrase={keyPhrase}
+        keyPhrase={debouncedKeyPhrase}
         openKeyPhraseModal={() => setKeyPhraseModalVisible(true)}
         wallet={wallet}
         setIsAddRecordModalOpen={setIsAddRecordModalOpen}
@@ -28,10 +31,11 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
           ? (
             <PasswordManager
               isAddRecordModalOpen={isAddRecordModalOpen}
-              keyPhrase={keyPhrase}
+              keyPhrase={debouncedKeyPhrase}
               PasswordManagerSC={PasswordManagerSC}
               setIsAddRecordModalOpen={setIsAddRecordModalOpen}
               setIsIncorrectPassPhrase={setIsIncorrectPassPhrase}
+              setIsDecyphering={setIsDecyphering}
               wallet={wallet}
             />
           )
@@ -79,7 +83,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
             <Modal.Footer justify="center">
               <Button
                 auto
-                disabled={
+                disabled={ isDecyphering ||
                   isFirstKeyPhraseEnter
                     ? false
                     : !keyPhrase || isIncorrectPassPhrase
@@ -98,7 +102,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
               </Button>
               <Button
                 auto
-                disabled={!keyPhrase || isIncorrectPassPhrase}
+                disabled={!keyPhrase || isIncorrectPassPhrase || isDecyphering}
                 onPress={
                   () => {
                     setKeyPhraseModalVisible(false)
@@ -106,7 +110,13 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
                   }
                 }
                 type="submit">
-                Save
+                {
+                  isDecyphering && keyPhrase
+                    ? (
+                      <Loading color="currentColor" />
+                    )
+                    : 'Save'
+                }
               </Button>
             </Modal.Footer>
           </form>

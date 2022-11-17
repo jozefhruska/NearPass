@@ -12,12 +12,13 @@ export default ({
   isAddRecordModalOpen,
   setIsIncorrectPassPhrase,
   setIsAddRecordModalOpen,
+  setIsDecyphering,
 }) => {
   const [contractResponse, setContractResponse] = React.useState([]);
   const [decryptedContractResponse, setDecryptedContractResponse] = React.useState([]);
   const [activeRecord, setActiveRecord] = React.useState(null);
-  const [isLoading, setIsLoading] = React.useState(true);
   const decipherAndSetText = async (passwordRecords) => {
+    setIsDecyphering(true)
     let didFail = false;
     let wasOnePasswordCorrect = false;
     const decryptedPasswordRecords = await Promise.all((passwordRecords || contractResponse).map(async (encryptedPasswordRecord, id) => {
@@ -53,6 +54,7 @@ export default ({
       setDecryptedContractResponse(decryptedPasswordRecords)
     }
     setIsIncorrectPassPhrase(!wasOnePasswordCorrect)
+    setIsDecyphering(false)
   }
 
   const getPasswordRecords = async () => {
