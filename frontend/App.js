@@ -13,8 +13,8 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
   const [isIncorrectPassPhrase, setIsIncorrectPassPhrase] = React.useState(false)
   const [isKeyPhraseModalVisible, setKeyPhraseModalVisible] = React.useState(!keyPhrase && isSignedIn);
   const [isAddRecordModalOpen, setIsAddRecordModalOpen] = React.useState(false);
-  const [isDecyphering, setIsDecyphering] = React.useState(false);
-  const [triggerDecyphering, setTriggerDecyphering] = React.useState(false);
+  const [isDecrypting, setIsDecrypting] = React.useState(false);
+  const [triggerDecrypting, setTriggerDecrypting] = React.useState(false);
   const debouncedKeyPhrase = useDebounce(keyPhrase, 50);
   return (
     <>
@@ -36,9 +36,9 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
               PasswordManagerSC={PasswordManagerSC}
               setIsAddRecordModalOpen={setIsAddRecordModalOpen}
               setIsIncorrectPassPhrase={setIsIncorrectPassPhrase}
-              setIsDecyphering={setIsDecyphering}
-              triggerDecyphering={triggerDecyphering}
-              setTriggerDecyphering={setTriggerDecyphering}
+              setIsDecrypting={setIsDecrypting}
+              triggerDecrypting={triggerDecrypting}
+              setTriggerDecrypting={setTriggerDecrypting}
               wallet={wallet}
             />
           )
@@ -50,9 +50,9 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
           setKeyPhraseModalVisible={setKeyPhraseModalVisible}
           isIncorrectPassPhrase={isIncorrectPassPhrase}
           keyPhrase={keyPhrase}
-          isDecyphering={isDecyphering}
+          isDecrypting={isDecrypting}
           setKeyPhrase={setKeyPhrase}
-          setTriggerDecyphering={setTriggerDecyphering}
+          setTriggerDecrypting={setTriggerDecrypting}
           wallet={wallet}
         />
       }

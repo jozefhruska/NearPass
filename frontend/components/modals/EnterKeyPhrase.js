@@ -8,8 +8,8 @@ export const EnterKeyPhrase = ({
   isIncorrectPassPhrase,
   keyPhrase,
   setKeyPhrase,
-  isDecyphering,
-  setTriggerDecyphering,
+  isDecrypting,
+  setTriggerDecrypting,
   wallet,
 }) => {
   return (
@@ -43,29 +43,29 @@ export const EnterKeyPhrase = ({
             value={keyPhrase}
             size="lg"
             helperColor="error"
-            helperText={keyPhrase && isIncorrectPassPhrase ? 'Incorrect passphrase' : ''}
+            helperText={isIncorrectPassPhrase ? 'Incorrect passphrase' : ''}
           />
           <Spacer y={0}/>
         </Modal.Body>
         <Modal.Footer justify="center">
           <Button
             auto
-            disabled={isDecyphering}
+            disabled={isDecrypting}
             flat
             onPress={wallet.signOut}>
               Sign out
           </Button>
           <Button
             auto
-            disabled={!keyPhrase || isDecyphering}
+            disabled={!keyPhrase || isDecrypting}
             onPress={
               () => {
-                setTriggerDecyphering(true)
+                setTriggerDecrypting(true)
               }
             }
             type="submit">
             {
-              isDecyphering && keyPhrase
+              isDecrypting && keyPhrase
                 ? (
                   <Loading color="currentColor" type="points" />
                 )

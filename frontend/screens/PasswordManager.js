@@ -1,9 +1,8 @@
 import React from 'react';
-import { AES, enc } from 'crypto-js';
-import { Container, Table, Button } from '@nextui-org/react';
-import PasswordCell from '../components/PasswordCell';
+import { Container } from '@nextui-org/react';
 import { AddRecord } from '../components/modals/AddRecord';
-import { firestoreHttpsCallable } from '../helpers/util';
+import { decryptAndSetRecords, getPasswordRecords as getPasswordRecordsWithArgs } from '../helpers/encryption';
+import PasswordRecordsTable from '../components/PasswordRecordsTable';
 
 export default ({
   closeKeyPhraseModal,
@@ -11,139 +10,50 @@ export default ({
   keyPhrase,
   wallet,
   isAddRecordModalOpen,
-  setTriggerDecyphering,
+  setTriggerDecrypting,
   setIsIncorrectPassPhrase,
   setIsAddRecordModalOpen,
-  setIsDecyphering,
-  triggerDecyphering,
+  setIsDecrypting,
+  triggerDecrypting,
 }) => {
   const [contractResponse, setContractResponse] = React.useState([]);
   const [decryptedContractResponse, setDecryptedContractResponse] = React.useState([]);
   const [activeRecord, setActiveRecord] = React.useState(null);
-  const decipherAndSetText = async (passwordRecords) => {
-    setIsDecyphering(true)
-    let didFail = false;
-    let wasOnePasswordCorrect = false;
-    const decryptedPasswordRecords = await Promise.all((passwordRecords || contractResponse).map(async (encryptedPasswordRecord, id) => {
-      try {
-        const responseDecrypt = await firestoreHttpsCallable('secondRoundDecrypt', {
-          passwordRecord: encryptedPasswordRecord,
-          userId: wallet?.accountId,
-        })
-        const decryptedPasswordRecord = responseDecrypt?.data?.passwordRecord
-        const decryptedFirstRound = {
-          index: decryptedPasswordRecord.index,
-          link: decryptedPasswordRecord.link
-            ? AES.decrypt(decryptedPasswordRecord.link, keyPhrase).toString(enc.Utf8)
-            : '',
-          username: decryptedPasswordRecord.username
-            ? AES.decrypt(decryptedPasswordRecord.username, keyPhrase).toString(enc.Utf8)
-            : '',
-          password: AES.decrypt(decryptedPasswordRecord.password, keyPhrase).toString(enc.Utf8),
-          passwordName: AES.decrypt(decryptedPasswordRecord.passwordName, keyPhrase).toString(enc.Utf8),
-        }
-        if (decryptedFirstRound.passwordName && decryptedFirstRound.password) {
-          setIsIncorrectPassPhrase(false)
-          wasOnePasswordCorrect = true
-          return ({
-            id,
-            ...decryptedFirstRound,
-          })
-        }
-      } catch(e) {
-        didFail = true
-      }
-    }))
-    if (!didFail) {
-      setDecryptedContractResponse(decryptedPasswordRecords.filter(value => value))
-    }
-    setIsIncorrectPassPhrase(!wasOnePasswordCorrect)
-    if (wasOnePasswordCorrect) {
-      closeKeyPhraseModal()
-    }
-    setIsDecyphering(false)
-  }
-
-  const getPasswordRecords = async () => {
-    const passwordRecords = await PasswordManagerSC.getPasswordRecord(wallet?.accountId)
-    setContractResponse(passwordRecords)
-    if (passwordRecords.length && keyPhrase) {
-      await decipherAndSetText(passwordRecords)
-    } else { // In case user has no passwords yet, accept any string
-      setDecryptedContractResponse([])
-      setIsIncorrectPassPhrase(false)
-    }
-  }
-
+  const getPasswordRecords = () => getPasswordRecordsWithArgs({
+    PasswordManagerSC,
+    setContractResponse,
+    keyPhrase,
+    setIsDecrypting,
+    setIsIncorrectPassPhrase,
+    setDecryptedContractResponse,
+    closeKeyPhraseModal,
+    wallet,
+  });
   React.useEffect(() => {
-    getPasswordRecords()
-  }, [])
+    getPasswordRecords();
+  }, []);
   React.useEffect(() => {
-    if (contractResponse.length && triggerDecyphering) {
-      decipherAndSetText()
-      setTriggerDecyphering(false)
+    if (contractResponse.length && triggerDecrypting) {
+      decryptAndSetRecords({
+        keyPhrase,
+        setIsDecrypting,
+        setIsIncorrectPassPhrase,
+        setDecryptedContractResponse,
+        closeKeyPhraseModal,
+        wallet,
+        passwordRecords: contractResponse,
+      }).then(() => setTriggerDecrypting(false))
     }
-  }, [triggerDecyphering])
-  const columns = [
-    { name: "PASSWORD NAME", uid: "passwordName" },
-    { name: "WEBSITE", uid: "link" },
-    { name: "ACTIONS", uid: "actions" },
-  ]
+  }, [triggerDecrypting])
   return (
     <Container md>
-      <Table
-        aria-label="Password overview table"
-        css={{
-          height: "auto",
-          minWidth: "100%",
-        }}
-        selectionMode="none"
-      >
-        <Table.Header columns={columns}>
-          {(column) => (
-            <Table.Column
-              key={column.uid}
-              hideHeader={column.uid === "actions"}
-              align={column.uid === "actions" ? "center" : "start"}
-            >
-              {column.name}
-            </Table.Column>
-          )}
-        </Table.Header>
-        <Table.Body>
-          {
-            decryptedContractResponse.map((record, index) => (
-              <Table.Row key={index}>
-                {(columnKey) => (
-                  <Table.Cell>
-                    <PasswordCell
-                      record={record}
-                      columnKey={columnKey}
-                      openEditModal={(record) => {
-                        setActiveRecord(record)
-                        setIsAddRecordModalOpen(true)
-                      }}
-                      PasswordManagerSC={PasswordManagerSC}
-                      getPasswordRecords={getPasswordRecords}
-                    />
-                  </Table.Cell>
-                )}
-              </Table.Row>
-            ))
-          }
-          { !decryptedContractResponse.length &&
-            <Table.Row>
-              <Table.Cell>
-                <Button light color="primary" auto onPress={() => setIsAddRecordModalOpen(true)}>
-                  Start by adding your first password here.
-                </Button>
-              </Table.Cell>
-              <Table.Cell/>
-              <Table.Cell/>
-            </Table.Row>
-          }
-        </Table.Body>
-      </Table>
+      <PasswordRecordsTable
+        setActiveRecord={setActiveRecord}
+        setIsAddRecordModalOpen={setIsAddRecordModalOpen}
+        PasswordManagerSC={PasswordManagerSC}
+        getPasswordRecords={getPasswordRecords}
+        records={decryptedContractResponse}
+      />
       { isAddRecordModalOpen &&
         <AddRecord
           PasswordManagerSC={PasswordManagerSC}
