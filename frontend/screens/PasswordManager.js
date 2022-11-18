@@ -37,7 +37,7 @@ export default ({
     getPasswordRecords();
     // Needs to be here so it is executed once user logs in
     getTotalAccountBalanceSanitized(wallet).then(balance => {
-      if (balance > 200) {
+      if (balance > 0) {
         setHasEnoughFunds(true)
       }
     });

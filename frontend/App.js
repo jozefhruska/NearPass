@@ -7,7 +7,6 @@ import NavBar from './components/NavBar';
 import { useDebounce } from './helpers/hooks';
 import { EnterKeyPhrase } from './components/modals/EnterKeyPhrase'
 import { NotEnoughNear } from './components/modals/NotEnoughNear';
-import { getTotalAccountBalanceSanitized } from './helpers/near';
 
 
 export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
@@ -55,6 +54,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
               <NotEnoughNear
                 isOpen={isNotEnoughNearModalOpen}
                 setIsOpen={setIsNotEnoughNearModalOpen}
+                userId={wallet.accountId}
               />
             </>
           )

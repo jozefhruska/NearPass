@@ -7,6 +7,7 @@ import { CustomTooltip } from '../CustomTooltip';
 export const NotEnoughNear = ({
   isOpen,
   setIsOpen,
+  userId,
 }) => {
   return (
     <Modal
@@ -80,7 +81,7 @@ export const NotEnoughNear = ({
               </Col>
               <Col span={3}>
                 <Row justify="flex-end">
-                  <a href="https://buy.stripe.com/aEU7th4mT6Xw5gcbII">
+                  <a href={`https://buy.stripe.com/aEU7th4mT6Xw5gcbII?client_reference_id=${encodeURI(userId)}`}>
                     <Button
                       flat
                       auto
