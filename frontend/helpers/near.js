@@ -25,8 +25,13 @@ export const getAccount = async (wallet) => {
   return nearConnection.account(wallet.accountId);
 };
 
-// This will provide amount of near on the account + 2 numbers after decimal point
-export const sanitizeYoctoNear = (value) => parseFloat(value.substring(0, value.length - 22)) / 100
+// This will always show 3 digits at some point after decimal point
+// I.e. 199.319, 11.939, 10231.120, 0.123, 0.0000394...
+export const sanitizeYoctoNear = (value) => {
+  const substraction = (24 > value.length ? value.length : 24) - 3
+  const numberOfZeros = 24 - substraction
+  return parseFloat(value.substring(0, value.length - substraction)) / 10 ** numberOfZeros;
+}
 
 export const getAccountBalanceObject = async (wallet) => {
   const account = await getAccount(wallet);

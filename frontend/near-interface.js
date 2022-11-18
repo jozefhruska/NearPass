@@ -10,6 +10,10 @@ export class NEARPasswordManager {
     return await this.wallet.viewMethod({ contractId: this.contractId, method: 'get_password_record', args: { accountId } });
   }
 
+  async getRemainingStorage(accountId) {
+    return await this.wallet.viewMethod({ contractId: this.contractId, method: 'get_user_remaining_storage', args: { accountId } });
+  }
+
   async setPasswordRecord({
     index,
     link,

@@ -13,8 +13,12 @@ const assert = (condition, message) => {
   }
 }
 
+const pricePerByte = BigInt(10000000000000000000)
+
 @NearBindgen({})
 class PasswordManager {
+  // Amount of yoctoNEAR stored by each user for their records
+  prepaidStorage: UnorderedMap<bigint> = new UnorderedMap<bigint>('prepaid-map')
   records: UnorderedMap<Array<PasswordRecord>> = new UnorderedMap<Array<PasswordRecord>>('records-map');
 
   @view({})
@@ -22,6 +26,17 @@ class PasswordManager {
     accountId,
   }): Array<PasswordRecord> {
     return this.records.get(accountId) || []
+  }
+
+  @view({})
+  get_user_remaining_storage({
+    accountId,
+  }): string {
+    const currentStorageUse = this.get_current_storage_usage(accountId);
+    const storageStakingByUser = pricePerByte * BigInt(currentStorageUse);
+    const prepaidAmount = this.prepaidStorage.get(accountId, {defaultValue: BigInt(0)});
+    const remainingStorage = prepaidAmount - storageStakingByUser;
+    return remainingStorage.toString()
   }
 
   @call({})
@@ -46,8 +61,7 @@ class PasswordManager {
     this.records.set(accountId, newRecordsReindexed)
   }
 
-  @call({})
-  set_password_record({
+  private set_password_record_internal({
     index,
     link,
     passwordName,
@@ -71,7 +85,7 @@ class PasswordManager {
     assert(password.length <= 128, 'Parameter password is too long to be stored in this smart contract.');
     assert(username.length <= 128, 'Parameter username is too long to be stored in this smart contract.');
 
-    let accountId = near.signerAccountId();
+    const accountId = near.signerAccountId();
     const currentlyStoredPasswords = this.records.get(accountId) || []
     const newPasswordEntry: PasswordRecord = {
       index: typeof index === 'number' ? index : currentlyStoredPasswords.length,
@@ -93,5 +107,57 @@ class PasswordManager {
       currentlyStoredPasswords.push(newPasswordEntry)
       this.records.set(accountId, currentlyStoredPasswords)
     }
+  }
+
+  private get_current_storage_usage(accountId: string): number {
+    const currentlyStoredPasswords = this.records.get(accountId) || []
+    const currentlyUsedBytesForPasswords = JSON.stringify(currentlyStoredPasswords).length
+    const storageRequiredForBookkeeping = 50 // for prepaid storage + some reserve
+    return storageRequiredForBookkeeping + currentlyUsedBytesForPasswords
+  }
+
+  @call({ payableFunction: true })
+  prepay_and_set_password_record(
+    passwordRecord: {
+    index?: number, // If index is not provided then this is a new entry
+    link: string,
+    passwordName: string,
+    password: string,
+    username: string,
+  }): void {
+    const accountId = near.signerAccountId();
+    const prepaidAmount: bigint = near.attachedDeposit() as bigint;
+    const prepaidSoFar = this.prepaidStorage.get(accountId, {defaultValue: BigInt(0)});
+    const newPrepaidAmount = prepaidAmount + prepaidSoFar;
+    const storageUsageForNewEntry = JSON.stringify(passwordRecord).length;
+    const newStorageUsage = this.get_current_storage_usage(accountId) + storageUsageForNewEntry;
+    const newStorageStakingByUser = pricePerByte * BigInt(newStorageUsage);
+    assert(
+      newStorageStakingByUser <= newPrepaidAmount,
+      `You need to deposit atleast ${newStorageStakingByUser - newPrepaidAmount} yoctoNEAR to cover your new storage costs.`
+    );
+    this.set_password_record_internal(passwordRecord);
+    this.prepaidStorage.set(accountId, newPrepaidAmount);
+  }
+
+  @call({})
+  set_password_record(
+    passwordRecord: {
+    index?: number, // If index is not provided then this is a new entry
+    link: string,
+    passwordName: string,
+    password: string,
+    username: string,
+  }): void {
+    const accountId = near.signerAccountId();
+    const prepaidAmount = this.prepaidStorage.get(accountId, {defaultValue: BigInt(0)});
+    const storageUsageForNewEntry = JSON.stringify(passwordRecord).length;
+    const newStorageUsage = this.get_current_storage_usage(accountId) + storageUsageForNewEntry;
+    const newStorageStakingByUser = pricePerByte * BigInt(newStorageUsage);
+    assert(
+      newStorageStakingByUser <= prepaidAmount,
+      `You need to deposit atleast ${newStorageStakingByUser - prepaidAmount} yoctoNEAR to cover your new storage costs.`
+    );
+    this.set_password_record_internal(passwordRecord);
   }
 }

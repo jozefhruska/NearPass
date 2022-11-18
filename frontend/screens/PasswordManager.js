@@ -3,7 +3,7 @@ import { Container } from '@nextui-org/react';
 import { AddRecord } from '../components/modals/AddRecord';
 import { decryptAndSetRecords, getPasswordRecords as getPasswordRecordsWithArgs } from '../helpers/encryption';
 import PasswordRecordsTable from '../components/PasswordRecordsTable';
-import { getTotalAccountBalanceSanitized } from '../helpers/near';
+import { getTotalAccountBalanceSanitized, sanitizeYoctoNear } from '../helpers/near';
 
 export default ({
   closeKeyPhraseModal,
@@ -53,6 +53,10 @@ export default ({
         wallet,
         passwordRecords: contractResponse,
       }).then(() => setTriggerDecrypting(false))
+    }
+    // If there are no entries stored yet, let user enter with the new passphrase
+    if (triggerDecrypting && !contractResponse.length) {
+      closeKeyPhraseModal();
     }
   }, [triggerDecrypting])
   return (
