@@ -6,13 +6,16 @@ import { AddRecord } from '../components/modals/AddRecord';
 import { firestoreHttpsCallable } from '../helpers/util';
 
 export default ({
+  closeKeyPhraseModal,
   PasswordManagerSC,
   keyPhrase,
   wallet,
   isAddRecordModalOpen,
+  setTriggerDecyphering,
   setIsIncorrectPassPhrase,
   setIsAddRecordModalOpen,
   setIsDecyphering,
+  triggerDecyphering,
 }) => {
   const [contractResponse, setContractResponse] = React.useState([]);
   const [decryptedContractResponse, setDecryptedContractResponse] = React.useState([]);
@@ -55,13 +58,16 @@ export default ({
       setDecryptedContractResponse(decryptedPasswordRecords.filter(value => value))
     }
     setIsIncorrectPassPhrase(!wasOnePasswordCorrect)
+    if (wasOnePasswordCorrect) {
+      closeKeyPhraseModal()
+    }
     setIsDecyphering(false)
   }
 
   const getPasswordRecords = async () => {
     const passwordRecords = await PasswordManagerSC.getPasswordRecord(wallet?.accountId)
     setContractResponse(passwordRecords)
-    if (passwordRecords.length) {
+    if (passwordRecords.length && keyPhrase) {
       await decipherAndSetText(passwordRecords)
     } else { // In case user has no passwords yet, accept any string
       setDecryptedContractResponse([])
@@ -73,10 +79,11 @@ export default ({
     getPasswordRecords()
   }, [])
   React.useEffect(() => {
-    if (contractResponse.length) {
+    if (contractResponse.length && triggerDecyphering) {
       decipherAndSetText()
+      setTriggerDecyphering(false)
     }
-  }, [keyPhrase])
+  }, [triggerDecyphering])
   const columns = [
     { name: "PASSWORD NAME", uid: "passwordName" },
     { name: "WEBSITE", uid: "link" },
@@ -105,8 +112,8 @@ export default ({
         </Table.Header>
         <Table.Body>
           {
-            decryptedContractResponse.map((record) => (
-              <Table.Row>
+            decryptedContractResponse.map((record, index) => (
+              <Table.Row key={index}>
                 {(columnKey) => (
                   <Table.Cell>
                     <PasswordCell

@@ -12,10 +12,10 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
   const [keyPhrase, setKeyPhrase] = React.useState('');
   const [isIncorrectPassPhrase, setIsIncorrectPassPhrase] = React.useState(false)
   const [isKeyPhraseModalVisible, setKeyPhraseModalVisible] = React.useState(!keyPhrase && isSignedIn);
-  const [isFirstKeyPhraseEnter, setIsFirstKeyPhraseEnter] = React.useState(!keyPhrase);
   const [isAddRecordModalOpen, setIsAddRecordModalOpen] = React.useState(false);
   const [isDecyphering, setIsDecyphering] = React.useState(false);
-  const debouncedKeyPhrase = useDebounce(keyPhrase, 250);
+  const [triggerDecyphering, setTriggerDecyphering] = React.useState(false);
+  const debouncedKeyPhrase = useDebounce(keyPhrase, 50);
   return (
     <>
       <NavBar
@@ -30,12 +30,15 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
         isSignedIn
           ? (
             <PasswordManager
+              closeKeyPhraseModal={() => setKeyPhraseModalVisible(false)}
               isAddRecordModalOpen={isAddRecordModalOpen}
               keyPhrase={debouncedKeyPhrase}
               PasswordManagerSC={PasswordManagerSC}
               setIsAddRecordModalOpen={setIsAddRecordModalOpen}
               setIsIncorrectPassPhrase={setIsIncorrectPassPhrase}
               setIsDecyphering={setIsDecyphering}
+              triggerDecyphering={triggerDecyphering}
+              setTriggerDecyphering={setTriggerDecyphering}
               wallet={wallet}
             />
           )
@@ -45,12 +48,12 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
         <EnterKeyPhrase
           isKeyPhraseModalVisible={isKeyPhraseModalVisible}
           setKeyPhraseModalVisible={setKeyPhraseModalVisible}
-          isFirstKeyPhraseEnter={isFirstKeyPhraseEnter}
           isIncorrectPassPhrase={isIncorrectPassPhrase}
           keyPhrase={keyPhrase}
           isDecyphering={isDecyphering}
           setKeyPhrase={setKeyPhrase}
-          setIsFirstKeyPhraseEnter={setIsFirstKeyPhraseEnter}
+          setTriggerDecyphering={setTriggerDecyphering}
+          wallet={wallet}
         />
       }
     </>

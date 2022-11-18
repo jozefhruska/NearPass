@@ -5,12 +5,12 @@ import { Text, Button, Modal, Spacer, Input, Loading } from '@nextui-org/react';
 export const EnterKeyPhrase = ({
   isKeyPhraseModalVisible,
   setKeyPhraseModalVisible,
-  isFirstKeyPhraseEnter,
   isIncorrectPassPhrase,
   keyPhrase,
   setKeyPhrase,
   isDecyphering,
-  setIsFirstKeyPhraseEnter,
+  setTriggerDecyphering,
+  wallet,
 }) => {
   return (
     <Modal
@@ -18,21 +18,17 @@ export const EnterKeyPhrase = ({
       blur
       open={isKeyPhraseModalVisible}
       onClose={() => setKeyPhraseModalVisible(false)}
-      preventClose={isFirstKeyPhraseEnter || isIncorrectPassPhrase}
+      preventClose
     >
       <Modal.Header>
-        {
-          isFirstKeyPhraseEnter && <Spacer y={3}/>
-        }
+        <Spacer y={2} />
         <Text id="modal-title" size={18}>
-          {isFirstKeyPhraseEnter ? 'Enter' : 'Change'} your passphrase
+          Enter your passphrase
         </Text>
       </Modal.Header>
       <form onSubmit={
         (e) => {
           e.preventDefault()
-          setKeyPhraseModalVisible(false)
-          setIsFirstKeyPhraseEnter(false)
         }}>
         <Modal.Body>
           <Spacer y={0}/>
@@ -54,30 +50,17 @@ export const EnterKeyPhrase = ({
         <Modal.Footer justify="center">
           <Button
             auto
-            disabled={ isDecyphering ||
-            isFirstKeyPhraseEnter
-              ? false
-              : !keyPhrase || isIncorrectPassPhrase
-            }
+            disabled={isDecyphering}
             flat
-            onPress={() =>
-              isFirstKeyPhraseEnter
-                ? wallet.signOut()
-                : setKeyPhraseModalVisible(false)
-            }>
-            {
-              isFirstKeyPhraseEnter
-                ? 'Sign out'
-                : 'Close'
-            }
+            onPress={wallet.signOut}>
+              Sign out
           </Button>
           <Button
             auto
-            disabled={!keyPhrase || isIncorrectPassPhrase || isDecyphering}
+            disabled={!keyPhrase || isDecyphering}
             onPress={
               () => {
-                setKeyPhraseModalVisible(false)
-                setIsFirstKeyPhraseEnter(false)
+                setTriggerDecyphering(true)
               }
             }
             type="submit">
