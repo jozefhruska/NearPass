@@ -26,15 +26,15 @@ export const getAccount = async (wallet) => {
 };
 
 // This will provide amount of near on the account + 2 numbers after decimal point
-export const normalizeYoctoNear = (value) => parseFloat(value.substring(0, value.length - 22)) / 100
+export const sanitizeYoctoNear = (value) => parseFloat(value.substring(0, value.length - 22)) / 100
 
 export const getAccountBalanceObject = async (wallet) => {
   const account = await getAccount(wallet);
   return account.getAccountBalance();
 };
 
-export const getTotalAccountBalance = async (wallet) => {
+export const getTotalAccountBalanceSanitized = async (wallet) => {
   const account = await getAccount(wallet);
   const balance = await account.getAccountBalance();
-  return normalizeYoctoNear(balance.total);
+  return sanitizeYoctoNear(balance.total);
 };

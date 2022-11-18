@@ -3,13 +3,17 @@ import { Container } from '@nextui-org/react';
 import { AddRecord } from '../components/modals/AddRecord';
 import { decryptAndSetRecords, getPasswordRecords as getPasswordRecordsWithArgs } from '../helpers/encryption';
 import PasswordRecordsTable from '../components/PasswordRecordsTable';
+import { getTotalAccountBalanceSanitized } from '../helpers/near';
 
 export default ({
   closeKeyPhraseModal,
   PasswordManagerSC,
   keyPhrase,
   wallet,
+  hasEnoughFunds,
   isAddRecordModalOpen,
+  setHasEnoughFunds,
+  setIsNotEnoughNearModalOpen,
   setTriggerDecrypting,
   setIsIncorrectPassPhrase,
   setIsAddRecordModalOpen,
@@ -31,6 +35,12 @@ export default ({
   });
   React.useEffect(() => {
     getPasswordRecords();
+    // Needs to be here so it is executed once user logs in
+    getTotalAccountBalanceSanitized(wallet).then(balance => {
+      if (balance > 200) {
+        setHasEnoughFunds(true)
+      }
+    });
   }, []);
   React.useEffect(() => {
     if (contractResponse.length && triggerDecrypting) {
@@ -48,10 +58,11 @@ export default ({
   return (
     <Container md>
       <PasswordRecordsTable
-        setActiveRecord={setActiveRecord}
-        setIsAddRecordModalOpen={setIsAddRecordModalOpen}
+        setIsNotEnoughNearModalOpen={setIsNotEnoughNearModalOpen}
         PasswordManagerSC={PasswordManagerSC}
         getPasswordRecords={getPasswordRecords}
+        setActiveRecord={hasEnoughFunds ? setActiveRecord : () => {}}
+        setIsAddRecordModalOpen={hasEnoughFunds ? setIsAddRecordModalOpen : setIsNotEnoughNearModalOpen}
         records={decryptedContractResponse}
       />
       { isAddRecordModalOpen &&

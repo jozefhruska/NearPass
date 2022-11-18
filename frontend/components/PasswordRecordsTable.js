@@ -3,11 +3,13 @@ import { Table, Button } from '@nextui-org/react';
 import PasswordCell from './PasswordCell';
 
 export default ({
+  hasEnoughFunds,
   records,
   setActiveRecord,
   setIsAddRecordModalOpen,
   PasswordManagerSC,
   getPasswordRecords,
+  setIsNotEnoughNearModalOpen,
 }) => {
   const columns = [
     { name: "PASSWORD NAME", uid: "passwordName" },
@@ -41,6 +43,8 @@ export default ({
               {(columnKey) => (
                 <Table.Cell>
                   <PasswordCell
+                    hasEnoughFunds={hasEnoughFunds}
+                    setIsNotEnoughNearModalOpen={setIsNotEnoughNearModalOpen}
                     record={record}
                     columnKey={columnKey}
                     openEditModal={(record) => {

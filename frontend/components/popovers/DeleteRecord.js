@@ -1,7 +1,14 @@
 import React from "react";
 import { Text, Button, Grid, Row, Loading } from '@nextui-org/react';
 
-export const DeleteRecord = ({ closePopover, getPasswordRecords, index, PasswordManagerSC }) => {
+export const DeleteRecord = ({
+  closePopover,
+  getPasswordRecords,
+  index,
+  PasswordManagerSC,
+  setIsNotEnoughNearModalOpen,
+  hasEnoughFunds,
+}) => {
   const [isLoading, setIsLoading] = React.useState(false);
   return (
     <Grid.Container
@@ -33,10 +40,14 @@ export const DeleteRecord = ({ closePopover, getPasswordRecords, index, Password
             disabled={isLoading}
             onPress={
               async () => {
-                setIsLoading(true)
-                await PasswordManagerSC.deletePasswordRecord({index});
-                await getPasswordRecords()
-                setIsLoading(false)
+                if (hasEnoughFunds) {
+                  setIsLoading(true)
+                  await PasswordManagerSC.deletePasswordRecord({index});
+                  await getPasswordRecords()
+                  setIsLoading(false)
+                } else {
+                  setIsNotEnoughNearModalOpen(true)
+                }
                 closePopover()
               }
           }>

@@ -5,3 +5,7 @@
 body {
   overflow: auto !important;
 }
+/* This is getting ridicilous.. */
+.nextui-tooltip-content {
+  z-index: 10000 !important;
+}

@@ -7,7 +7,15 @@ import { DeleteIcon } from './DeleteIcon';
 import { DeleteRecord } from './popovers/DeleteRecord';
 import { ViewRecord } from './popovers/ViewRecord';
 
-export default ({ record, columnKey, getPasswordRecords, openEditModal, PasswordManagerSC }) => {
+export default ({
+  record,
+  columnKey,
+  getPasswordRecords,
+  openEditModal,
+  PasswordManagerSC,
+  hasEnoughFunds,
+  setIsNotEnoughNearModalOpen,
+}) => {
   const cellValue = record[columnKey];
   const [isDeletePopoverOpen, setIsDeletePopoverOpen] = React.useState(false);
   const [isViewPopoverOpen, setIsViewPopoverOpen] = React.useState(false);
@@ -86,6 +94,8 @@ export default ({ record, columnKey, getPasswordRecords, openEditModal, Password
                 </Popover.Trigger>
                 <Popover.Content>
                   <DeleteRecord
+                    setIsNotEnoughNearModalOpen={setIsNotEnoughNearModalOpen}
+                    hasEnoughFunds={hasEnoughFunds}
                     closePopover={() => setIsDeletePopoverOpen(false)}
                     getPasswordRecords={getPasswordRecords}
                     index={record.index}

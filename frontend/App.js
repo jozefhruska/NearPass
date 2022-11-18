@@ -6,9 +6,13 @@ import PasswordManager from './screens/PasswordManager';
 import NavBar from './components/NavBar';
 import { useDebounce } from './helpers/hooks';
 import { EnterKeyPhrase } from './components/modals/EnterKeyPhrase'
+import { NotEnoughNear } from './components/modals/NotEnoughNear';
+import { getTotalAccountBalanceSanitized } from './helpers/near';
 
 
 export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
+  const [isNotEnoughNearModalOpen, setIsNotEnoughNearModalOpen] = React.useState(false);
+  const [hasEnoughFunds, setHasEnoughFunds] = React.useState(false);
   const [keyPhrase, setKeyPhrase] = React.useState('');
   const [isIncorrectPassPhrase, setIsIncorrectPassPhrase] = React.useState(false)
   const [isKeyPhraseModalVisible, setKeyPhraseModalVisible] = React.useState(!keyPhrase && isSignedIn);
@@ -16,31 +20,43 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
   const [isDecrypting, setIsDecrypting] = React.useState(false);
   const [triggerDecrypting, setTriggerDecrypting] = React.useState(false);
   const debouncedKeyPhrase = useDebounce(keyPhrase, 50);
+
   return (
     <>
       <NavBar
         PasswordManagerSC={PasswordManagerSC}
         isSignedIn={isSignedIn}
+        hasEnoughFunds={hasEnoughFunds}
         keyPhrase={debouncedKeyPhrase}
         openKeyPhraseModal={() => setKeyPhraseModalVisible(true)}
         wallet={wallet}
         setIsAddRecordModalOpen={setIsAddRecordModalOpen}
+        setIsNotEnoughNearModalOpen={setIsNotEnoughNearModalOpen}
       />
       {
         isSignedIn
           ? (
-            <PasswordManager
-              closeKeyPhraseModal={() => setKeyPhraseModalVisible(false)}
-              isAddRecordModalOpen={isAddRecordModalOpen}
-              keyPhrase={debouncedKeyPhrase}
-              PasswordManagerSC={PasswordManagerSC}
-              setIsAddRecordModalOpen={setIsAddRecordModalOpen}
-              setIsIncorrectPassPhrase={setIsIncorrectPassPhrase}
-              setIsDecrypting={setIsDecrypting}
-              triggerDecrypting={triggerDecrypting}
-              setTriggerDecrypting={setTriggerDecrypting}
-              wallet={wallet}
-            />
+            <>
+              <PasswordManager
+                closeKeyPhraseModal={() => setKeyPhraseModalVisible(false)}
+                isAddRecordModalOpen={isAddRecordModalOpen}
+                hasEnoughFunds={hasEnoughFunds}
+                setHasEnoughFunds={setHasEnoughFunds}
+                keyPhrase={debouncedKeyPhrase}
+                PasswordManagerSC={PasswordManagerSC}
+                setIsAddRecordModalOpen={setIsAddRecordModalOpen}
+                setIsIncorrectPassPhrase={setIsIncorrectPassPhrase}
+                setIsDecrypting={setIsDecrypting}
+                setIsNotEnoughNearModalOpen={setIsNotEnoughNearModalOpen}
+                triggerDecrypting={triggerDecrypting}
+                setTriggerDecrypting={setTriggerDecrypting}
+                wallet={wallet}
+              />
+              <NotEnoughNear
+                isOpen={isNotEnoughNearModalOpen}
+                setIsOpen={setIsNotEnoughNearModalOpen}
+              />
+            </>
           )
           : <Intro wallet={wallet} />
       }

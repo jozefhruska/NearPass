@@ -2,10 +2,12 @@ import React from 'react';
 import { Button, Navbar, Spacer, Text } from '@nextui-org/react';
 
 export default ({
+  hasEnoughFunds,
   isSignedIn,
   openKeyPhraseModal,
   wallet,
   setIsAddRecordModalOpen,
+  setIsNotEnoughNearModalOpen,
 }) => {
   return (
     <>
@@ -21,7 +23,11 @@ export default ({
               ? (
                 <>
                   <Navbar.Item>
-                    <Button auto onPress={() => setIsAddRecordModalOpen(true)}>
+                    <Button auto onPress={
+                      () => hasEnoughFunds
+                        ? setIsAddRecordModalOpen(true)
+                        : setIsNotEnoughNearModalOpen(true)
+                    }>
                       Add password
                     </Button>
                   </Navbar.Item>
