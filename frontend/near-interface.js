@@ -6,21 +6,21 @@ export class NEARPasswordManager {
     this.wallet = walletToUse;
   }
 
-  async getPasswordRecords(accountId) {
+  getPasswordRecords = async (accountId) => {
     return await this.wallet.viewMethod({ contractId: this.contractId, method: 'get_password_records', args: { accountId } });
   }
 
-  async getRemainingStorage(accountId, afterThisRecordWouldBeAdded) {
+  getRemainingStorage = async (accountId, afterThisRecordWouldBeAdded) => {
     return await this.wallet.viewMethod({ contractId: this.contractId, method: 'get_user_remaining_storage', args: { accountId, afterThisRecordWouldBeAdded } });
   }
 
-  async setPasswordRecord({
+  setPasswordRecord = async ({
     index,
     link,
     passwordName,
     password,
     username,
-  }) {
+  }) => {
     return await this.wallet.callMethod({
       contractId: this.contractId,
       method: 'set_password_record',
@@ -34,13 +34,13 @@ export class NEARPasswordManager {
     });
   }
 
-  async prepayAndSetPasswordRecord({
+  prepayAndSetPasswordRecord = async ({
     index,
     link,
     passwordName,
     password,
     username,
-  }) {
+  }) => {
     const deposit = utils.format.parseNearAmount('0.1')
     return await this.wallet.callMethod({
       contractId: this.contractId,
@@ -56,10 +56,10 @@ export class NEARPasswordManager {
     });
   }
 
-  async prepayForAnotherUser({
+  prepayForAnotherUser = async ({
     accountId,
     amount,
-  }) {
+  }) => {
     const deposit = utils.format.parseNearAmount(amount.toString())
     return await this.wallet.callMethod({
       contractId: this.contractId,
@@ -71,9 +71,9 @@ export class NEARPasswordManager {
     });
   }
 
-  async deletePasswordRecord({
+  deletePasswordRecord = async ({
     index,
-  }) {
+  }) => {
     return await this.wallet.callMethod({
       contractId: this.contractId,
       method: 'delete_password_record',

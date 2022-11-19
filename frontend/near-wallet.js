@@ -35,7 +35,7 @@ export class Wallet {
   }
 
   // To be called when the website loads
-  async startUp() {
+  startUp = async () => {
     this.walletSelector = await setupWalletSelector({
       network: this.network,
       modules: [setupMyNearWallet({ iconUrl: MyNearIconUrl }),
@@ -53,21 +53,22 @@ export class Wallet {
   }
 
   // Sign-in method
-  signIn() {
+  signIn = () => {
     const description = 'Please select a wallet to sign in.';
     const modal = setupModal(this.walletSelector, { contractId: this.createAccessKeyFor, description });
     modal.show();
   }
 
   // Sign-out method
-  signOut() {
+  signOut = () => {
+    console.log('this', this)
     this.wallet.signOut();
     this.wallet = this.accountId = this.createAccessKeyFor = null;
     window.location.replace(window.location.origin + window.location.pathname);
   }
 
   // Make a read-only call to retrieve information from the network
-  async viewMethod({ contractId, method, args = {} }) {
+  viewMethod = async ({ contractId, method, args = {} }) => {
     const { network } = this.walletSelector.options;
     const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
     let res = await provider.query({
@@ -81,7 +82,7 @@ export class Wallet {
   }
 
   // Call a method that changes the contract's state
-  async callMethod({ contractId, method, args = {}, gas = THIRTY_TGAS, deposit = NO_DEPOSIT }) {
+  callMethod = async ({ contractId, method, args = {}, gas = THIRTY_TGAS, deposit = NO_DEPOSIT }) => {
     // Sign a transaction with the "FunctionCall" action
     return await this.wallet.signAndSendTransaction({
       signerId: this.accountId,
@@ -101,7 +102,7 @@ export class Wallet {
   }
 
   // Get transaction result from the network
-  async getTransactionResult(txhash) {
+  getTransactionResult = async (txhash) => {
     const { network } = this.walletSelector.options;
     const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
 
