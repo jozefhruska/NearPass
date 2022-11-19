@@ -3,8 +3,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ToastContainer } from 'react-toastify';
 import App from './App';
-import { NextUIProvider } from '@nextui-org/react';
 import './assets/global.css';
+import './assets/template.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { initializeApp } from 'firebase/app';
 import { getFunctions } from 'firebase/functions';
@@ -35,10 +35,10 @@ window.onload = async () => {
   const isSignedIn = await wallet.startUp()
 
   ReactDOM.render(
-    <NextUIProvider>
+    <>
       <ToastContainer />
       <App isSignedIn={isSignedIn} PasswordManagerSC={PasswordManagerSC} wallet={wallet} />
-    </NextUIProvider>,
+    </>,
     document.getElementById('root')
   );
 }

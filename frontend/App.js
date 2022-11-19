@@ -7,6 +7,7 @@ import NavBar from './components/NavBar';
 import { useDebounce } from './helpers/hooks';
 import { EnterKeyPhrase } from './components/modals/EnterKeyPhrase'
 import { NotEnoughNear } from './components/modals/NotEnoughNear';
+import { NextUIProvider } from '@nextui-org/react';
 
 
 export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
@@ -22,20 +23,19 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
 
   return (
     <>
-      <NavBar
-        PasswordManagerSC={PasswordManagerSC}
-        isSignedIn={isSignedIn}
-        hasEnoughFunds={hasEnoughFunds}
-        keyPhrase={debouncedKeyPhrase}
-        openKeyPhraseModal={() => setKeyPhraseModalVisible(true)}
-        wallet={wallet}
-        setIsAddRecordModalOpen={setIsAddRecordModalOpen}
-        setIsNotEnoughNearModalOpen={setIsNotEnoughNearModalOpen}
-      />
-      {
-        isSignedIn
-          ? (
-            <>
+        {
+          isSignedIn && (
+            <NextUIProvider>
+              <NavBar
+                PasswordManagerSC={PasswordManagerSC}
+                isSignedIn={isSignedIn}
+                hasEnoughFunds={hasEnoughFunds}
+                keyPhrase={debouncedKeyPhrase}
+                openKeyPhraseModal={() => setKeyPhraseModalVisible(true)}
+                wallet={wallet}
+                setIsAddRecordModalOpen={setIsAddRecordModalOpen}
+                setIsNotEnoughNearModalOpen={setIsNotEnoughNearModalOpen}
+              />
               <PasswordManager
                 closeKeyPhraseModal={() => setKeyPhraseModalVisible(false)}
                 isAddRecordModalOpen={isAddRecordModalOpen}
@@ -56,21 +56,28 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
                 setIsOpen={setIsNotEnoughNearModalOpen}
                 userId={wallet.accountId}
               />
-            </>
+            </NextUIProvider>
           )
-          : <Intro wallet={wallet} />
-      }
-      { isKeyPhraseModalVisible &&
-        <EnterKeyPhrase
-          isKeyPhraseModalVisible={isKeyPhraseModalVisible}
-          setKeyPhraseModalVisible={setKeyPhraseModalVisible}
-          isIncorrectPassPhrase={isIncorrectPassPhrase}
-          keyPhrase={keyPhrase}
-          isDecrypting={isDecrypting}
-          setKeyPhrase={setKeyPhrase}
-          setTriggerDecrypting={setTriggerDecrypting}
-          wallet={wallet}
-        />
+        }
+        { isKeyPhraseModalVisible &&
+          <EnterKeyPhrase
+            isKeyPhraseModalVisible={isKeyPhraseModalVisible}
+            setKeyPhraseModalVisible={setKeyPhraseModalVisible}
+            isIncorrectPassPhrase={isIncorrectPassPhrase}
+            keyPhrase={keyPhrase}
+            isDecrypting={isDecrypting}
+            setKeyPhrase={setKeyPhrase}
+            setTriggerDecrypting={setTriggerDecrypting}
+            wallet={wallet}
+          />
+        }
+      {
+        !isSignedIn && (
+          <Intro
+            onLoginPress={() => wallet.signIn() && setKeyPhraseModalVisible(true)}
+            wallet={wallet}
+          />
+        )
       }
     </>
   )
