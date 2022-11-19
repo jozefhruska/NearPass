@@ -62,7 +62,6 @@ export const AddRecord = ({
           encryptedPasswordRecord,
         )
       )
-      console.log('remainingStorage', remainingStorage)
       if (remainingStorage < 0) {
         await PasswordManagerSC.prepayAndSetPasswordRecord(encryptedPasswordRecord)
       } else {
