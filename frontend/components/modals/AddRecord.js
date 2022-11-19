@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { firestoreHttpsCallable } from '../../helpers/util';
+import { sanitizeYoctoNear } from '../../helpers/near';
 
 const RecordSchema = Yup.object().shape({
   username: Yup.string()
@@ -55,7 +56,18 @@ export const AddRecord = ({
         userId: wallet?.accountId,
       })
       const encryptedPasswordRecord = response?.data?.passwordRecord
-      await PasswordManagerSC.setPasswordRecord(encryptedPasswordRecord)
+      const remainingStorage = sanitizeYoctoNear(
+        await PasswordManagerSC.getRemainingStorage(
+          wallet.accountId,
+          encryptedPasswordRecord,
+        )
+      )
+      console.log('remainingStorage', remainingStorage)
+      if (remainingStorage < 0) {
+        await PasswordManagerSC.prepayAndSetPasswordRecord(encryptedPasswordRecord)
+      } else {
+        await PasswordManagerSC.setPasswordRecord(encryptedPasswordRecord)
+      }
       await getPasswordRecords()
       setIsOpen(false);
       setIsLoading(false);

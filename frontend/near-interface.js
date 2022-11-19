@@ -1,4 +1,4 @@
-/* Talking with a contract often involves transforming data, we recommend you to encapsulate that logic into a class */
+import { utils } from 'near-api-js'
 
 export class NEARPasswordManager {
   constructor({ contractId, walletToUse }) {
@@ -6,12 +6,12 @@ export class NEARPasswordManager {
     this.wallet = walletToUse;
   }
 
-  async getPasswordRecord(accountId) {
-    return await this.wallet.viewMethod({ contractId: this.contractId, method: 'get_password_record', args: { accountId } });
+  async getPasswordRecords(accountId) {
+    return await this.wallet.viewMethod({ contractId: this.contractId, method: 'get_password_records', args: { accountId } });
   }
 
-  async getRemainingStorage(accountId) {
-    return await this.wallet.viewMethod({ contractId: this.contractId, method: 'get_user_remaining_storage', args: { accountId } });
+  async getRemainingStorage(accountId, afterThisRecordWouldBeAdded) {
+    return await this.wallet.viewMethod({ contractId: this.contractId, method: 'get_user_remaining_storage', args: { accountId, afterThisRecordWouldBeAdded } });
   }
 
   async setPasswordRecord({
@@ -24,6 +24,28 @@ export class NEARPasswordManager {
     return await this.wallet.callMethod({
       contractId: this.contractId,
       method: 'set_password_record',
+      args: {
+        index,
+        link,
+        passwordName,
+        password,
+        username,
+      },
+    });
+  }
+
+  async prepayAndSetPasswordRecord({
+    index,
+    link,
+    passwordName,
+    password,
+    username,
+  }) {
+    const deposit = utils.format.parseNearAmount('0.1')
+    return await this.wallet.callMethod({
+      contractId: this.contractId,
+      method: 'prepay_and_set_password_record',
+      deposit,
       args: {
         index,
         link,

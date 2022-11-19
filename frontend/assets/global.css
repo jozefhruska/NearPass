@@ -9,3 +9,7 @@ body {
 .nextui-tooltip-content {
   z-index: 10000 !important;
 }
+
+.Toastify__toast-container {
+  z-index: 10000 !important;
+}

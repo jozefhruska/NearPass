@@ -63,7 +63,7 @@ export const getPasswordRecords = async ({
   closeKeyPhraseModal,
   wallet,
 }) => {
-  const passwordRecords = await PasswordManagerSC.getPasswordRecord(wallet?.accountId);
+  const passwordRecords = await PasswordManagerSC.getPasswordRecords(wallet?.accountId);
   setContractResponse(passwordRecords);
   if (passwordRecords.length && keyPhrase) {
     await decryptAndSetRecords({

@@ -21,24 +21,35 @@ class PasswordManager {
   prepaidStorage: UnorderedMap<bigint> = new UnorderedMap<bigint>('prepaid-map')
   records: UnorderedMap<Array<PasswordRecord>> = new UnorderedMap<Array<PasswordRecord>>('records-map');
 
+  // Get all password records
   @view({})
-  get_password_record({
+  get_password_records({
     accountId,
   }): Array<PasswordRecord> {
     return this.records.get(accountId) || []
   }
 
+  // 1) Calculates remaining storage for a user on contract
+  // 2) On top of that it can calculate remaining storage after new contract would be added
   @view({})
   get_user_remaining_storage({
     accountId,
+    afterThisRecordWouldBeAdded,
+  }: {
+    accountId: string,
+    afterThisRecordWouldBeAdded?: PasswordRecord,
   }): string {
     const currentStorageUse = this.get_current_storage_usage(accountId);
     const storageStakingByUser = pricePerByte * BigInt(currentStorageUse);
+    const futureStakingNeededByUser = afterThisRecordWouldBeAdded
+      ? BigInt(JSON.stringify(afterThisRecordWouldBeAdded).length) * pricePerByte
+      : BigInt(0)
     const prepaidAmount = this.prepaidStorage.get(accountId, {defaultValue: BigInt(0)});
-    const remainingStorage = prepaidAmount - storageStakingByUser;
+    const remainingStorage = prepaidAmount - storageStakingByUser - futureStakingNeededByUser;
     return remainingStorage.toString()
   }
 
+  // Deletes password record according to index for user which calls this method
   @call({})
   delete_password_record({
     index,
@@ -61,6 +72,7 @@ class PasswordManager {
     this.records.set(accountId, newRecordsReindexed)
   }
 
+  // Sets (creates or edits) password record according to whether index was provided
   private set_password_record_internal({
     index,
     link,
@@ -109,6 +121,7 @@ class PasswordManager {
     }
   }
 
+  // Calculates current storage usage for specified account id
   private get_current_storage_usage(accountId: string): number {
     const currentlyStoredPasswords = this.records.get(accountId) || []
     const currentlyUsedBytesForPasswords = JSON.stringify(currentlyStoredPasswords).length
@@ -116,6 +129,8 @@ class PasswordManager {
     return storageRequiredForBookkeeping + currentlyUsedBytesForPasswords
   }
 
+  // 1) Prepays specified amount of storage for caller's accountId
+  // 2) Sets (creates or edits) password record according to whether index was provided
   @call({ payableFunction: true })
   prepay_and_set_password_record(
     passwordRecord: {
@@ -140,6 +155,9 @@ class PasswordManager {
     this.prepaidStorage.set(accountId, newPrepaidAmount);
   }
 
+  // 1) Should only be called if get_user_remaining_storage returns positive value; otherwise this
+  //    will throw an exception
+  // 2) Sets (creates or edits) password record according to whether index was provided
   @call({})
   set_password_record(
     passwordRecord: {

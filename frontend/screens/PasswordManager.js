@@ -62,6 +62,7 @@ export default ({
   return (
     <Container md>
       <PasswordRecordsTable
+        hasEnoughFunds={hasEnoughFunds}
         setIsNotEnoughNearModalOpen={setIsNotEnoughNearModalOpen}
         PasswordManagerSC={PasswordManagerSC}
         getPasswordRecords={getPasswordRecords}
