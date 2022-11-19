@@ -178,4 +178,23 @@ class PasswordManager {
     );
     this.set_password_record_internal(passwordRecord);
   }
+
+  // Enables to prepay storage for different account
+  @call({ payableFunction: true })
+  prepay_for_another_user({
+    accountId,
+  }: {
+    accountId: string,
+  }): void {
+    const prepaidAmount: bigint = near.attachedDeposit() as bigint;
+    // A bit arbitrary, but should approximately cover entry in `prepaidStorage` UnorderedMap
+    const minimumPrepay = BigInt(50) * pricePerByte
+    assert(
+      minimumPrepay <= prepaidAmount,
+      `You need to prepay atleast ${minimumPrepay} yoctoNEAR to cover basic storage costs.`
+    );
+    const prepaidSoFar = this.prepaidStorage.get(accountId, {defaultValue: BigInt(0)});
+    const newPrepaidAmount = prepaidAmount + prepaidSoFar;
+    this.prepaidStorage.set(accountId, newPrepaidAmount);
+  }
 }

@@ -56,6 +56,21 @@ export class NEARPasswordManager {
     });
   }
 
+  async prepayForAnotherUser({
+    accountId,
+    amount,
+  }) {
+    const deposit = utils.format.parseNearAmount(amount.toString())
+    return await this.wallet.callMethod({
+      contractId: this.contractId,
+      method: 'prepay_for_another_user',
+      deposit,
+      args: {
+        accountId,
+      },
+    });
+  }
+
   async deletePasswordRecord({
     index,
   }) {
