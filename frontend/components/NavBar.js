@@ -14,7 +14,7 @@ export default ({
       <Navbar isBordered variant="static">
         <Navbar.Brand>
           <Text b color="inherit" hideIn="xs">
-            NEAR Password Manager
+            NearPass
           </Text>
         </Navbar.Brand>
         <Navbar.Content>
