@@ -4,7 +4,7 @@ import {sendTokensFromFeedAccount, setContractAllowance} from './near';
 export const setUserAllowance = functions.https.onRequest(async (req, res) => {
   try {
     console.log('[setUserAllowance] Start.');
-    const accountId = 'oliverrydzi.testnet';
+    const accountId = 'orydzi.near';
     await sendTokensFromFeedAccount(accountId);
     await setContractAllowance(accountId);
 

@@ -1,4 +1,4 @@
-import {testnetAccountInfo} from './secrets';
+import {mainnetAccountInfo} from './secrets';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const nearAPI = require('near-api-js');
@@ -7,23 +7,23 @@ const nearAPI = require('near-api-js');
 export const getAccountNearConnection = async () => {
   const myKeyStore = new nearAPI.keyStores.InMemoryKeyStore();
   // creates a public / private key pair using the provided private key
-  const keyPair = nearAPI.KeyPair.fromString(testnetAccountInfo.key);
+  const keyPair = nearAPI.KeyPair.fromString(mainnetAccountInfo.key);
   // adds the keyPair you created to keyStore
-  await myKeyStore.setKey('testnet', testnetAccountInfo.accountId, keyPair);
+  await myKeyStore.setKey('mainnet', mainnetAccountInfo.accountId, keyPair);
   const connectionConfig = {
-    networkId: 'testnet',
-    keyStore: myKeyStore, // first create a key store
-    nodeUrl: 'https://rpc.testnet.near.org',
-    walletUrl: 'https://wallet.testnet.near.org',
-    helperUrl: 'https://helper.testnet.near.org',
-    explorerUrl: 'https://explorer.testnet.near.org',
+    networkId: 'mainnet',
+    keyStore: myKeyStore,
+    nodeUrl: 'https://rpc.mainnet.near.org',
+    walletUrl: 'https://wallet.mainnet.near.org',
+    helperUrl: 'https://helper.mainnet.near.org',
+    explorerUrl: 'https://explorer.mainnet.near.org',
   };
   return nearAPI.connect(connectionConfig);
 };
 
 export const sendTokensFromFeedAccount = async (accountId: string) => {
   const nearConnection = await getAccountNearConnection();
-  const account = await nearConnection.account(testnetAccountInfo.accountId);
+  const account = await nearConnection.account(mainnetAccountInfo.accountId);
   const amountInYoctoNear = nearAPI.utils.format.parseNearAmount('0.1');
   await account.sendMoney(
       accountId,
@@ -33,10 +33,10 @@ export const sendTokensFromFeedAccount = async (accountId: string) => {
 
 export const setContractAllowance = async (accountId: string) => {
   const nearConnection = await getAccountNearConnection();
-  const account = await nearConnection.account(testnetAccountInfo.accountId);
+  const account = await nearConnection.account(mainnetAccountInfo.accountId);
   const contract = new nearAPI.Contract(
       account,
-      'near-pass.testnet',
+      'nearpass.near',
       {
         changeMethods: ['prepay_for_another_user'],
         viewMethods: [],
@@ -46,8 +46,8 @@ export const setContractAllowance = async (accountId: string) => {
   // @ts-ignore
   await contract.prepay_for_another_user({
     args: {
-      accountId, // argument name and value - pass empty object if no args required
+      accountId,
     },
-    amount: amountInYoctoNear, // attached deposit in yoctoNEAR (optional)
+    amount: amountInYoctoNear,
   });
 };

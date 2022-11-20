@@ -9,4 +9,4 @@ fi
 
 echo ">> Deploying contract"
 
-near deploy --accountId near-pass.testnet --wasmFile build/nearpass.wasm
+near deploy --accountId nearpass.near --wasmFile build/nearpass.wasm

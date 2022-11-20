@@ -1,1 +1,1 @@
-export const networkId = 'testnet' // Change to mainnet once deployed
+export const networkId = 'mainnet' // Change to mainnet once deployed
