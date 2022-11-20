@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Navbar, Spacer, Text } from '@nextui-org/react';
+import { Button, Image, Navbar, Spacer, Text } from '@nextui-org/react';
+import Logo from '../assets/images/logo/logo-black.svg';
 
 export default ({
   hasEnoughFunds,
@@ -13,9 +14,11 @@ export default ({
     <>
       <Navbar isBordered variant="static">
         <Navbar.Brand>
-          <Text b color="inherit" hideIn="xs">
-            NearPass
-          </Text>
+          <Image
+            src={Logo}
+            alt="Logo image"
+            height={38}
+          />
         </Navbar.Brand>
         <Navbar.Content>
           {
