@@ -4,8 +4,8 @@ import { Image } from '@nextui-org/react';
 import Logo from '../../assets/images/logo/logo-white.svg';
 
 const SocialShare = [
-  {Social: <FaInstagram /> , link: 'https://www.instagram.com/'},
-  {Social: <FaTwitter /> , link: 'https://twitter.com/'},
+  {Social: <FaInstagram /> , link: 'https://www.instagram.com/nearpassmanager/'},
+  {Social: <FaTwitter /> , link: 'https://twitter.com/nearpassmanager'},
 ]
 
 const Footer = () => {
@@ -30,7 +30,7 @@ const Footer = () => {
             <div className="inner text-center">
               <ul className="social-share rn-lg-size d-flex justify-content-center liststyle">
                 {SocialShare.map((val , i) => (
-                  <li key={i}><a href={`${val.link}`}>{val.Social}</a></li>
+                  <li key={i}><a href={`${val.link}`} target="_blank">{val.Social}</a></li>
                 ))}
               </ul>
             </div>
@@ -38,7 +38,7 @@ const Footer = () => {
           <div className="col-lg-4 col-md-12 col-sm-12 col-12">
             <div className="inner text-lg-right text-center mt_md--20 mt_sm--20">
               <div className="text">
-                <p>Copyright © 2022. All Rights Reserved.</p>
+                <p>Made with {'<'}3 by Oliver</p>
               </div>
             </div>
           </div>
