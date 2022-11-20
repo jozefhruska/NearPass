@@ -1,7 +1,7 @@
 import React from 'react';
 import {FaTwitter ,FaInstagram ,FaFacebookF , FaLinkedinIn} from "react-icons/fa";
 import { Image } from '@nextui-org/react';
-import Logo from '../../assets/images/logo/logo.png';
+import Logo from '../../assets/images/logo/logo-white.svg';
 
 const SocialShare = [
   {Social: <FaInstagram /> , link: 'https://www.instagram.com/'},

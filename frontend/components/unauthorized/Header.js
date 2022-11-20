@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image } from '@nextui-org/react';
-import LogoLight from '../../assets/images/logo/logo-light.png';
+import LogoLight from '../../assets/images/logo/logo-white.svg';
 export default ({onLoginPress}) => {
   return (
     <header className={`header-area formobile-menu header--transparent color-white`}>
@@ -11,7 +11,7 @@ export default ({onLoginPress}) => {
               <Image
                 src={LogoLight}
                 alt="Logo image"
-                objectFit="cover"
+                width={183}
               />
             </a>
           </div>
