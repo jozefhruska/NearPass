@@ -13,12 +13,13 @@ import { getFunctions } from 'firebase/functions';
 import { NEARPasswordManager } from './near-interface';
 import { Wallet } from './near-wallet';
 
+const contractId = 'near-pass.testnet'
 // When creating the wallet you can optionally ask to create an access key
 // Having the key enables to call non-payable methods without interrupting the user to sign
-const wallet = new Wallet({ createAccessKeyFor: process.env.CONTRACT_NAME })
+const wallet = new Wallet({ createAccessKeyFor: contractId })
 
 // Abstract the logic of interacting with the contract to simplify your flow
-const PasswordManagerSC = new NEARPasswordManager({ contractId: process.env.CONTRACT_NAME, walletToUse: wallet });
+const PasswordManagerSC = new NEARPasswordManager({ contractId: contractId, walletToUse: wallet });
 
 const app = initializeApp({
   apiKey: "AIzaSyAAfnD_VisJDrLl44bFG8hrCGXeVseEi8Q",

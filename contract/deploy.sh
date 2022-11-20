@@ -9,5 +9,4 @@ fi
 
 echo ">> Deploying contract"
 
-# https://docs.near.org/tools/near-cli#near-dev-deploy
-near dev-deploy --wasmFile build/nearpass.wasm
+near deploy --accountId near-pass.testnet --wasmFile build/nearpass.wasm
