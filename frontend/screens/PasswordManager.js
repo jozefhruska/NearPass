@@ -18,6 +18,7 @@ export default ({
   setIsIncorrectPassPhrase,
   setIsAddRecordModalOpen,
   setIsDecrypting,
+  setShouldCheckPasswordStrength,
   triggerDecrypting,
 }) => {
   const [contractResponse, setContractResponse] = React.useState([]);
@@ -25,6 +26,7 @@ export default ({
   const [activeRecord, setActiveRecord] = React.useState(null);
   const getPasswordRecords = () => getPasswordRecordsWithArgs({
     PasswordManagerSC,
+    setShouldCheckPasswordStrength,
     setContractResponse,
     keyPhrase,
     setIsDecrypting,

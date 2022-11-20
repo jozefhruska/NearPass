@@ -15,6 +15,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
   const [hasEnoughFunds, setHasEnoughFunds] = React.useState(false);
   const [keyPhrase, setKeyPhrase] = React.useState('');
   const [isIncorrectPassPhrase, setIsIncorrectPassPhrase] = React.useState(false)
+  const [shouldCheckPasswordStrength, setShouldCheckPasswordStrength] = React.useState(false)
   const [isKeyPhraseModalVisible, setKeyPhraseModalVisible] = React.useState(!keyPhrase && isSignedIn);
   const [isAddRecordModalOpen, setIsAddRecordModalOpen] = React.useState(false);
   const [isDecrypting, setIsDecrypting] = React.useState(false);
@@ -49,6 +50,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
                 setIsNotEnoughNearModalOpen={setIsNotEnoughNearModalOpen}
                 triggerDecrypting={triggerDecrypting}
                 setTriggerDecrypting={setTriggerDecrypting}
+                setShouldCheckPasswordStrength={setShouldCheckPasswordStrength}
                 wallet={wallet}
               />
               <NotEnoughNear
@@ -61,6 +63,7 @@ export default function App({ isSignedIn, PasswordManagerSC, wallet }) {
         }
         { isKeyPhraseModalVisible &&
           <EnterKeyPhrase
+            shouldCheckPasswordStrength={shouldCheckPasswordStrength}
             isKeyPhraseModalVisible={isKeyPhraseModalVisible}
             setKeyPhraseModalVisible={setKeyPhraseModalVisible}
             isIncorrectPassPhrase={isIncorrectPassPhrase}

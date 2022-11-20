@@ -1,7 +1,9 @@
 .nws-modal-wrapper {
   z-index: 2000 !important;
 }
-
+html {
+  height: 100%;
+}
 body {
   overflow: auto !important;
 }

@@ -60,23 +60,27 @@ export const getPasswordRecords = async ({
   setIsDecrypting,
   setIsIncorrectPassPhrase,
   setDecryptedContractResponse,
+  setShouldCheckPasswordStrength,
   closeKeyPhraseModal,
   wallet,
 }) => {
   const passwordRecords = await PasswordManagerSC.getPasswordRecords(wallet?.accountId);
   setContractResponse(passwordRecords);
-  if (passwordRecords.length && keyPhrase) {
-    await decryptAndSetRecords({
-      keyPhrase,
-      passwordRecords,
-      setIsDecrypting,
-      setIsIncorrectPassPhrase,
-      setDecryptedContractResponse,
-      closeKeyPhraseModal,
-      wallet,
-    });
+  if (passwordRecords.length) {
+    if (keyPhrase) {
+      await decryptAndSetRecords({
+        keyPhrase,
+        passwordRecords,
+        setIsDecrypting,
+        setIsIncorrectPassPhrase,
+        setDecryptedContractResponse,
+        closeKeyPhraseModal,
+        wallet,
+      });
+    }
   } else { // In case user has no passwords yet, accept any string
     setDecryptedContractResponse([]);
     setIsIncorrectPassPhrase(false);
+    setShouldCheckPasswordStrength(true);
   }
 };
