@@ -3,7 +3,7 @@ import ScrollToTop from 'react-scroll-up';
 import { Image } from '@nextui-org/react';
 import Header from '../components/unauthorized/Header';
 import PropertiesList from '../components/unauthorized/PropertiesList';
-import AboutImage from '../assets/images/about/about.jpg';
+import AboutImage from '../assets/images/about/about.png';
 import Tabs from '../components/unauthorized/Tabs';
 import { FiChevronUp } from 'react-icons/all';
 import CallAction from '../components/unauthorized/CallToAction';
@@ -62,7 +62,7 @@ export default ({ onLoginPress }) => {
         <div className="about-wrapper">
           <div className="container">
             <div className="row row--35">
-              <div className="col-lg-5">
+              <div className="col-lg-5" style={{ display: 'flex', alignItems: 'center' }}>
                 <div className="thumbnail">
                   <Image
                     src={AboutImage}
@@ -76,7 +76,7 @@ export default ({ onLoginPress }) => {
                   <div className="section-title">
                     <h2 className="title">About NearPass</h2>
                     <p className="description">
-                      There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which dont look even slightly believable. If you are going to use a passage of Lorem Ipsum,
+                      This project started because in this digital age you just need too many passwords to keep track of. This usually leads to having just one complex password, so if this password gets compromised you need to change it everywhere. Other option is to use password managers, which are usually developed by large companies and you have to trust your data to their servers.
                     </p>
                   </div>
                   <div className="row mt--30">
