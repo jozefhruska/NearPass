@@ -1,5 +1,5 @@
 {
-  "name": "functions",
+  "name": "nearpass-cloud-functions",
   "scripts": {
     "lint": "eslint --ext .ts .",
     "build": "tsc",
