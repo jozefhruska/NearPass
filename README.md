@@ -18,3 +18,4 @@ afterwards you can run the frontend via
     npm run start
 
 
+MIT

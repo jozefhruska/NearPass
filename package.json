@@ -1,7 +1,7 @@
 {
   "name": "NEAR-password-manager",
   "version": "1.0.0",
-  "license": "(MIT AND Apache-2.0)",
+  "license": "MIT",
   "scripts": {
     "start": "npm run deploy && cd frontend && npm run start",
     "deploy": "cd contract && npm run deploy",
