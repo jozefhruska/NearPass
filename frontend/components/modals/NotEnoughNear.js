@@ -55,7 +55,6 @@ export const NotEnoughNear = ({
                 <Col span={2}>
                   <Card.Image
                     src={LogoSvg}
-                    css={{bg: 'black', br: '50%'}}
                     height={40}
                     width={40}
                     alt="Near Icon"
