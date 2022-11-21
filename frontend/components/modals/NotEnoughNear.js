@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, Button, Modal, Card, Col, Row, Tooltip } from '@nextui-org/react';
 import LogoSvg from '../../assets/images/logo/logo-white.svg'
-import PovertyJpg from '../../assets/poverty.jpg'
+import PovertyJpg from '../../assets/images/poverty.jpg'
 import { CustomTooltip } from '../CustomTooltip';
 
 export const NotEnoughNear = ({
