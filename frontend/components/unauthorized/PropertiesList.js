@@ -26,12 +26,12 @@ const ServiceList = [
   {
     icon: <IoIosSend />,
     title: '5',
-    description: 'Encrypted password (and metadata) is then send to webservice which further encrypts this passwords using AES-256 encryption with different key to protect users from weak passphrases.'
+    description: 'Encrypted password (and metadata) is then sent to webservice which further encrypts this passwords using AES-256 encryption with different key to protect users from weak passphrases.'
   },
   {
     icon: <FaFileContract />,
     title: '6',
-    description: 'After your password record is encrypted twice it is then send to be saved in the smart contract.'
+    description: 'After your password record is encrypted twice it is then sent to be saved in the smart contract.'
   },
   {
     icon: <HiOutlineDownload />,
